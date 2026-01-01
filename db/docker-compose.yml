@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:bookworm
+    container_name: postgres-dev
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: llmarticles
+    volumes:
+      # Use the new 18+ mount point
+      - pg-data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+volumes:
+  pg-data:
