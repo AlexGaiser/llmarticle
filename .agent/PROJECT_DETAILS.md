@@ -15,6 +15,11 @@ This is a project file to create a website that can host and display articles wr
 - Express
 - PostgreSQL
 
+## Testing Frameworks
+- Jest
+- React Testing Library
+- Supertest
+
 ## Project Structure
 Create separate folders for frontend and backend.
 
