@@ -1,10 +1,15 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { articlesRouter } from '@/routes/articles';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.use('/api/articles', articlesRouter);
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
