@@ -57,8 +57,5 @@ It should use JWT tokens for authentication
 - What library should be used for markdown processing or should we create our own?
 - What library should be used for file upload and storage?
 
-## LLM Instructions
-- Take in the above requirements and open questions and create a plan for the project.
-- In a series of steps, outline the process for creating the project.
-- Create a plan to implement the project in a series of concise git commits
-- Test each commit to ensure it works as expected
+## Agent Instructions
+- The agent should always refer to `AGENT_INSTRUCTIONS.md` in the root directory for persistent project-specific instructions, style guides, and behavioral rules.
