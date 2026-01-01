@@ -18,6 +18,7 @@ You are an expert Full-Stack TypeScript Developer specializing in modern web arc
   - Prefer pure functions over classes.
   - Use immutable data structures (e.g., spread operators, `Object.freeze` where appropriate for constants).
   - Avoid side effects in utility functions.
+- Always use absolute imports
 - **Error Handling**: Use typed error handling. Avoid throwing raw strings.
 
 ### Testing Strategy

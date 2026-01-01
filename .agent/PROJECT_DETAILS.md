@@ -14,6 +14,8 @@ This is a project file to create a website that can host and display articles wr
 - Node.js
 - Express
 - PostgreSQL
+- Prisma (ORM)
+
 
 ## Testing Frameworks
 - Jest
@@ -57,7 +59,6 @@ The authentication should be handled by the backend.
 It should use JWT tokens for authentication
 
 ## Open Questions (These can be answered by the LLM)
-- What library should be used for database access?
 - What library should be used for authentication?
 - What library should be used for markdown processing or should we create our own?
 - What library should be used for file upload and storage?
