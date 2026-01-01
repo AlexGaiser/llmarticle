@@ -57,5 +57,5 @@ It should use JWT tokens for authentication
 - What library should be used for markdown processing or should we create our own?
 - What library should be used for file upload and storage?
 
-## Agent Instructions
-- The agent should always refer to `AGENT_INSTRUCTIONS.md` in the root directory for persistent project-specific instructions, style guides, and behavioral rules.
+## Agent Reference
+For behavioral rules and coding standards, refer to `.agent/AGENT_INSTRUCTIONS.md`.
