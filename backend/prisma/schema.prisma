@@ -16,10 +16,23 @@ datasource db {
   // No 'url' here! It's handled by prisma.config.ts
 }
 
+model User {
+  id        String        @id @default(cuid())
+  email     String        @unique
+  password  String
+  articles  UserArticle[]
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt      @map("updated_at")
+
+  @@map("users")
+}
+
 model UserArticle {
   id        String   @id @default(cuid())
   title     String
   content   String
+  authorId  String?  @map("author_id")
+  author    User?    @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt      @map("updated_at")
 
