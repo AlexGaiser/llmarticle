@@ -1,9 +1,15 @@
-import React from "react";
-
-import { HomePage } from "@/components/HomePage/HomePage";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import { AppRoutes } from "@/routes";
 
 function App() {
-  return <HomePage />;
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App;

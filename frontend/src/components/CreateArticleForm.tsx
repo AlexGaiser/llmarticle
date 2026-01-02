@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import apiClient from "../api/client";
+import { useState } from "react";
+import { ArticleApi } from "@/api/articles";
+import { UI_MESSAGES } from "@/constants/messages";
+
+interface CreateArticleFormProps {
+  onArticleCreated: () => void;
+}
 
 export const CreateArticleForm = ({
   onArticleCreated,
-}: {
-  onArticleCreated: () => void;
-}) => {
+}: CreateArticleFormProps) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,16 +20,12 @@ export const CreateArticleForm = ({
     setError(null);
 
     try {
-      await apiClient.post("/articles", {
-        title,
-        content,
-      });
+      await ArticleApi.create({ title, content });
       setTitle("");
       setContent("");
       onArticleCreated();
-    } catch (err) {
-      setError("Failed to create article");
-      console.error(err);
+    } catch {
+      setError(UI_MESSAGES.ARTICLES.CREATE_ERROR);
     } finally {
       setLoading(false);
     }

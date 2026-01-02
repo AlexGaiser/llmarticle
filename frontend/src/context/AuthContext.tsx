@@ -41,6 +41,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const userData = await AuthApi.getCurrentUser();
           setUser(userData);
         } catch {
+          /**
+           * TODO: When migrating to cookies, clear session cookie instead of localStorage.
+           */
           localStorage.removeItem("token");
           setToken(null);
         }
@@ -55,6 +58,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email,
       password,
     });
+    /**
+     * TODO: Remove localStorage management when using cookies.
+     */
     localStorage.setItem("token", newToken);
     setToken(newToken);
     setUser(userData);
@@ -71,6 +77,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
+    /**
+     * TODO: When implementing cookies, trigger a logout API call to clear the cookie.
+     */
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);

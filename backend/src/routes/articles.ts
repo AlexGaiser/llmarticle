@@ -1,13 +1,13 @@
-import { Router } from 'express';
-import { prisma } from '@/db/prisma';
+import { Router, Response } from 'express';
+import { authMiddleware } from '@/middleware/auth';
+import { AuthRequest } from '@/types';
+import { ArticleService } from '@/services/article.service';
 
 export const articlesRouter = Router();
 
-articlesRouter.get('/', async (req, res) => {
+articlesRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const articles = await prisma.userArticle.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+    const articles = await ArticleService.findByAuthor(req.userId!);
     res.json({ articles });
   } catch (error) {
     console.error('Error fetching articles:', error);
@@ -15,7 +15,7 @@ articlesRouter.get('/', async (req, res) => {
   }
 });
 
-articlesRouter.post('/', async (req, res) => {
+articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { title, content } = req.body;
 
@@ -24,11 +24,10 @@ articlesRouter.post('/', async (req, res) => {
       return;
     }
 
-    const article = await prisma.userArticle.create({
-      data: {
-        title,
-        content,
-      },
+    const article = await ArticleService.create({
+      title,
+      content,
+      authorId: req.userId!,
     });
 
     res.status(201).json(article);

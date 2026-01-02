@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { CreateArticleForm } from "../CreateArticleForm";
-import { ArticleList } from "../ArticleList";
+import { useState } from "react";
+import { CreateArticleForm } from "@/components/CreateArticleForm";
+import { ArticleList } from "@/components/ArticleList";
+import { useAuth } from "@/context/AuthContext";
 
 export const HomePage = () => {
   const [refreshKey, setRefreshKey] = useState(0);
+  const { user, logout } = useAuth();
 
   const handleArticleCreated = () => {
     setRefreshKey((prev) => prev + 1);
@@ -12,13 +14,19 @@ export const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-            LLM Article Project
-          </h1>
-          <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
-            Share your thoughts and read what others have written.
-          </p>
+        <div className="flex justify-between items-center mb-10">
+          <div>
+            <h1 className="text-4xl font-extrabold text-gray-900">
+              LLM Article Project
+            </h1>
+            <p className="mt-2 text-gray-500">Welcome, {user?.email}</p>
+          </div>
+          <button
+            onClick={logout}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
         </div>
 
         <CreateArticleForm onArticleCreated={handleArticleCreated} />

@@ -1,0 +1,46 @@
+import { ArticleService } from './article.service';
+import { prisma } from '@/db/prisma';
+
+jest.mock('@/db/prisma', () => ({
+  prisma: {
+    userArticle: {
+      findMany: jest.fn(),
+      create: jest.fn(),
+    },
+  },
+}));
+
+describe('ArticleService', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should find articles by author', async () => {
+    const mockArticles = [{ id: '1', title: 'Test' }];
+    (prisma.userArticle.findMany as jest.Mock).mockResolvedValue(mockArticles);
+
+    const result = await ArticleService.findByAuthor('user-1');
+
+    expect(result).toEqual(mockArticles);
+    expect(prisma.userArticle.findMany).toHaveBeenCalledWith({
+      where: { authorId: 'user-1' },
+      orderBy: { createdAt: 'desc' },
+    });
+  });
+
+  it('should create an article', async () => {
+    const mockArticle = { id: '1', title: 'Test' };
+    (prisma.userArticle.create as jest.Mock).mockResolvedValue(mockArticle);
+
+    const result = await ArticleService.create({
+      title: 'Test',
+      content: 'Content',
+      authorId: 'user-1',
+    });
+
+    expect(result).toEqual(mockArticle);
+    expect(prisma.userArticle.create).toHaveBeenCalledWith({
+      data: { title: 'Test', content: 'Content', authorId: 'user-1' },
+    });
+  });
+});

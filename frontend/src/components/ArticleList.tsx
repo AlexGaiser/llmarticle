@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
-import apiClient from "../api/client";
-
-interface Article {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-}
+import { useEffect, useState } from "react";
+import { ArticleApi } from "@/api/articles";
+import { formatDate } from "@/utils/date";
+import { UI_MESSAGES } from "@/constants/messages";
+import { type Article } from "@/types";
 
 export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -16,11 +12,10 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await apiClient.get("/articles");
-        setArticles(response.data.articles);
-      } catch (err) {
-        setError("Failed to load articles");
-        console.error(err);
+        const data = await ArticleApi.getAll();
+        setArticles(data);
+      } catch {
+        setError(UI_MESSAGES.ARTICLES.LOAD_ERROR);
       } finally {
         setLoading(false);
       }
@@ -31,7 +26,9 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
 
   if (loading)
     return (
-      <div className="text-center py-4 text-gray-600">Loading articles...</div>
+      <div className="text-center py-4 text-gray-600">
+        {UI_MESSAGES.ARTICLES.LOADING}
+      </div>
     );
   if (error)
     return <div className="text-center py-4 text-red-600">{error}</div>;
@@ -43,7 +40,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
       </h2>
       {articles.length === 0 ? (
         <p className="text-gray-500 text-center py-8">
-          No articles found. Be the first to write one!
+          {UI_MESSAGES.ARTICLES.EMPTY}
         </p>
       ) : (
         articles.map((article) => (
@@ -58,7 +55,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
               {article.content}
             </p>
             <div className="mt-4 text-sm text-gray-400">
-              Published on {new Date(article.createdAt).toLocaleDateString()}
+              Published on {formatDate(article.createdAt)}
             </div>
           </div>
         ))
