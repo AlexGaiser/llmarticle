@@ -5,36 +5,19 @@ interface ClientConfig {
   withAuth?: boolean;
 }
 
-export const createApiClient = ({
-  baseURL,
-  withAuth = true,
-}: ClientConfig): AxiosInstance => {
+export const createApiClient = ({ baseURL }: ClientConfig): AxiosInstance => {
   const client = axios.create({
     baseURL,
+    withCredentials: true,
     headers: {
       "Content-Type": "application/json",
     },
   });
 
-  if (withAuth) {
-    /**
-     * TODO: When migrating to HttpOnly cookies:
-     * 1. Set withCredentials: true
-     * 2. Remove the Authorization header interceptor
-     */
-    client.interceptors.request.use((config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-  }
-
   return client;
 };
 
-// Default API client with auth
+// Default API client with auth and cookie support
 const apiClient = createApiClient({
   baseURL: import.meta.env.VITE_API_URL,
 });

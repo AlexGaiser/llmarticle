@@ -2,14 +2,10 @@ import { Router, Request, Response } from 'express';
 import { AuthRequest } from '@/types';
 import { authMiddleware } from '@/middleware/auth';
 import { registerUser, loginUser, getCurrentUser } from '@/services/auth.service';
+import { COOKIE_OPTIONS } from '@/config/auth';
 
 export const authRouter = Router();
 
-/**
- * TODO: Implement HttpOnly cookies for session management.
- * 1. Update response to set 'Set-Cookie' header.
- * 2. Remove token from JSON response body.
- */
 authRouter.post('/register', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -19,8 +15,9 @@ authRouter.post('/register', async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await registerUser(email, password);
-    res.status(201).json(result);
+    const { token, user } = await registerUser(email, password);
+    res.cookie('token', token, COOKIE_OPTIONS);
+    res.status(201).json({ user });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to register user';
     const status = message === 'User already exists' ? 409 : 500;
@@ -28,9 +25,6 @@ authRouter.post('/register', async (req: Request, res: Response) => {
   }
 });
 
-/**
- * TODO: Implement HttpOnly cookies for session management.
- */
 authRouter.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -40,13 +34,19 @@ authRouter.post('/login', async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await loginUser(email, password);
-    res.json(result);
+    const { token, user } = await loginUser(email, password);
+    res.cookie('token', token, COOKIE_OPTIONS);
+    res.json({ user });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to login';
     const status = message === 'Invalid credentials' ? 401 : 500;
     res.status(status).json({ error: message });
   }
+});
+
+authRouter.post('/logout', (req: Request, res: Response) => {
+  res.clearCookie('token');
+  res.json({ message: 'Logged out successfully' });
 });
 
 authRouter.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {

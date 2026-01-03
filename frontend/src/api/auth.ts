@@ -2,7 +2,6 @@ import apiClient from "./client";
 import { type User } from "@/types";
 
 export interface AuthResponse {
-  token: string;
   user: User;
 }
 
@@ -25,6 +24,10 @@ export const AuthApi = {
   register: async (input: RegisterInput): Promise<AuthResponse> => {
     const response = await apiClient.post("/auth/register", input);
     return response.data;
+  },
+
+  logout: async (): Promise<void> => {
+    await apiClient.post("/auth/logout");
   },
 
   getCurrentUser: async (): Promise<User> => {

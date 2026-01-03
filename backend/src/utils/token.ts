@@ -1,9 +1,6 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JwtPayload } from '@/types';
-
-// JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
-const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn'];
+import { TOKEN_CONFIG } from '@/config/auth';
 
 /**
  * Extracts Bearer token from Authorization header
@@ -18,13 +15,14 @@ export const extractBearerToken = (authHeader: string | undefined): string | nul
 
 /**
  * Type guard for JWT payload
+ * Ref: https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
  */
 const isJwtPayload = (decoded: unknown): decoded is JwtPayload => {
   return (
     typeof decoded === 'object' &&
     decoded !== null &&
     'userId' in decoded &&
-    typeof (decoded as JwtPayload).userId === 'string'
+    typeof (decoded as Record<string, unknown>).userId === 'string'
   );
 };
 
@@ -33,7 +31,7 @@ const isJwtPayload = (decoded: unknown): decoded is JwtPayload => {
  * @throws Error if token is invalid
  */
 export const verifyToken = (token: string): JwtPayload => {
-  const decoded = jwt.verify(token, JWT_SECRET);
+  const decoded = jwt.verify(token, TOKEN_CONFIG.secret);
 
   if (!isJwtPayload(decoded)) {
     throw new Error('Invalid token payload');
@@ -46,5 +44,7 @@ export const verifyToken = (token: string): JwtPayload => {
  * Generates a JWT token for a user
  */
 export const generateToken = (userId: string): string => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign({ userId }, TOKEN_CONFIG.secret, {
+    expiresIn: TOKEN_CONFIG.expiresIn as SignOptions['expiresIn'],
+  });
 };
