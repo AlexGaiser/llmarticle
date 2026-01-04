@@ -2,7 +2,8 @@ name: Deploy to DigitalOcean
 
 on:
   push:
-    branches: [master]
+    branches: [master, update-deployment]
+  workflow_dispatch:
 
 env:
   DOCR_REGISTRY: registry.digitalocean.com/miketyphon # Replace your-registry
