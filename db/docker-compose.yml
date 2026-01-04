@@ -3,7 +3,7 @@ services:
     image: postgres:bookworm
     container_name: postgres-dev
     environment:
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
       POSTGRES_DB: llmarticles
     volumes:
       # Use the new 18+ mount point

@@ -2,10 +2,10 @@ name: Deploy to DigitalOcean
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 env:
-  DOCR_REGISTRY: registry.digitalocean.com/your-registry # Replace your-registry
+  DOCR_REGISTRY: registry.digitalocean.com/miketyphon # Replace your-registry
   IMAGE_NAME_API: llmarticle-api
   IMAGE_NAME_WEB: llmarticle-web
 
