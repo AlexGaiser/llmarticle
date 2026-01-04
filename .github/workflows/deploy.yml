@@ -7,8 +7,7 @@ on:
 
 env:
   DOCR_REGISTRY: registry.digitalocean.com/miketyphon # Replace your-registry
-  IMAGE_NAME_API: llmarticle-api
-  IMAGE_NAME_WEB: llmarticle-web
+  IMAGE_NAME: llmarticle
 
 jobs:
   build:
@@ -28,13 +27,13 @@ jobs:
 
       - name: Build and Push API Image
         run: |
-          docker build -t $DOCR_REGISTRY/$IMAGE_NAME_API:latest -f backend/Dockerfile.production ./backend
-          docker push $DOCR_REGISTRY/$IMAGE_NAME_API:latest
+          docker build -t $DOCR_REGISTRY/$IMAGE_NAME:api -f backend/Dockerfile.production ./backend
+          docker push $DOCR_REGISTRY/$IMAGE_NAME:api
 
       - name: Build and Push Web Image
         run: |
-          docker build -t $DOCR_REGISTRY/$IMAGE_NAME_WEB:latest -f frontend/Dockerfile.production ./frontend
-          docker push $DOCR_REGISTRY/$IMAGE_NAME_WEB:latest
+          docker build -t $DOCR_REGISTRY/$IMAGE_NAME:web -f frontend/Dockerfile.production ./frontend
+          docker push $DOCR_REGISTRY/$IMAGE_NAME:web
 
   deploy:
     runs-on: ubuntu-latest

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    image: ${DOCR_REGISTRY}/llmarticle-api:latest
+    image: ${DOCR_REGISTRY}/llmarticle:api
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public
       - JWT_SECRET=${JWT_SECRET}
@@ -13,7 +13,7 @@ services:
       - app-network
 
   web:
-    image: ${DOCR_REGISTRY}/llmarticle-web:latest
+    image: ${DOCR_REGISTRY}/llmarticle:web
     ports:
       - "80:80"
       - "443:443"
