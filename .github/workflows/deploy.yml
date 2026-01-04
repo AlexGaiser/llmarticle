@@ -1,0 +1,72 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DOCR_REGISTRY: registry.digitalocean.com/your-registry # Replace your-registry
+  IMAGE_NAME_API: llmarticle-api
+  IMAGE_NAME_WEB: llmarticle-web
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Build and Push API Image
+        run: |
+          docker build -t $DOCR_REGISTRY/$IMAGE_NAME_API:latest -f backend/Dockerfile.production ./backend
+          docker push $DOCR_REGISTRY/$IMAGE_NAME_API:latest
+
+      - name: Build and Push Web Image
+        run: |
+          docker build -t $DOCR_REGISTRY/$IMAGE_NAME_WEB:latest -f frontend/Dockerfile.production ./frontend
+          docker push $DOCR_REGISTRY/$IMAGE_NAME_WEB:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose and local files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/var/www/llmarticle"
+
+      - name: SSH into Droplet and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/llmarticle
+            # Login to DOCR on droplet
+            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
+
+            # Export secrets for docker-compose
+            export DOCR_REGISTRY=${{ env.DOCR_REGISTRY }}
+            export DB_USER=${{ secrets.DB_USER }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export DB_NAME=${{ secrets.DB_NAME }}
+            export JWT_SECRET=${{ secrets.JWT_SECRET }}
+
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
