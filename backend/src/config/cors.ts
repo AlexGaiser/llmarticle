@@ -1,6 +1,10 @@
 import { CorsOptions } from 'cors';
 
-const corsOrigin = ['http://localhost:5173', 'https://llmarticle.alexgaiser.dev'];
+const corsOrigin = [
+  'http://localhost:5173',
+  'https://llmarticle.alexbuildsit.net',
+  'https://llmarticle.alexgaiser.com',
+];
 
 export const corsConfig: CorsOptions = {
   origin: corsOrigin,
