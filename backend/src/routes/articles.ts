@@ -36,3 +36,32 @@ articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response)
     res.status(500).json({ error: 'Failed to create article' });
   }
 });
+
+articlesRouter.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const { title, content } = req.body;
+    const article = await ArticleService.update(req.params.id, req.userId!, { title, content });
+    res.json(article);
+  } catch (error: any) {
+    if (error.message === 'Article not found or unauthorized') {
+      res.status(404).json({ error: error.message });
+    } else {
+      console.error('Error updating article:', error);
+      res.status(500).json({ error: 'Failed to update article' });
+    }
+  }
+});
+
+articlesRouter.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    await ArticleService.delete(req.params.id, req.userId!);
+    res.status(204).send();
+  } catch (error: any) {
+    if (error.message === 'Article not found or unauthorized') {
+      res.status(404).json({ error: error.message });
+    } else {
+      console.error('Error deleting article:', error);
+      res.status(500).json({ error: 'Failed to delete article' });
+    }
+  }
+});
