@@ -29,8 +29,8 @@ app.use(cors(corsConfig));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/auth', authRouter);
-app.use('/articles', articlesRouter);
+app.use('/v1/auth', authRouter);
+app.use('/v1/articles', articlesRouter);
 
 app.get('/ping', (req: Request, res: Response) => {
   res.send('pong');
