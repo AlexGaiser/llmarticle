@@ -3,6 +3,15 @@ name: Deploy to DigitalOcean
 on:
   push:
     branches: [master, deployment-test-prod]
+    paths-ignore:
+      - "backend/src/**/*.test.ts"
+      - "backend/jest.config.js"
+      - "backend/jest.setup.ts"
+      - "frontend/src/**/*.test.ts"
+      - "frontend/src/**/*.test.tsx"
+      - "frontend/src/test/**"
+      - "**/README.md"
+      - "project_plan/**"
   workflow_dispatch:
 
 env:
