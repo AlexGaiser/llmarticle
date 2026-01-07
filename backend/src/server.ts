@@ -32,11 +32,11 @@ app.use(cookieParser());
 app.use('/auth', authRouter);
 app.use('/articles', articlesRouter);
 
-app.get('/api/ping', (req: Request, res: Response) => {
+app.get('/ping', (req: Request, res: Response) => {
   res.send('pong');
 });
 
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
