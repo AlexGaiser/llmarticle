@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { AuthRequest } from '@/types';
 import { authMiddleware } from '@/middleware/auth';
 import { registerUser, loginUser, getCurrentUser } from '@/services/auth.service';
-import { COOKIE_OPTIONS } from '@/config/auth';
+import { getCookieOptions } from '@/config/auth';
 
 export const authRouter = Router();
 
@@ -16,7 +16,7 @@ authRouter.post('/register', async (req: Request, res: Response) => {
 
   try {
     const { token, user } = await registerUser(email, password);
-    res.cookie('token', token, COOKIE_OPTIONS);
+    res.cookie('token', token, getCookieOptions(req));
     res.status(201).json({ user });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to register user';
@@ -35,7 +35,7 @@ authRouter.post('/login', async (req: Request, res: Response) => {
 
   try {
     const { token, user } = await loginUser(email, password);
-    res.cookie('token', token, COOKIE_OPTIONS);
+    res.cookie('token', token, getCookieOptions(req));
     res.json({ user });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to login';

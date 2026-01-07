@@ -3,11 +3,15 @@ import { ArticleApi } from "@/api/articles";
 import { formatDate } from "@/utils/date";
 import { UI_MESSAGES } from "@/constants/messages";
 import { type Article } from "@/types";
+import { useAuth } from "@/context/AuthContext";
 
 export const ArticleList = ({ keyProp }: { keyProp: number }) => {
+  const { user } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ title: "", content: "" });
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -23,6 +27,36 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
 
     fetchArticles();
   }, [keyProp]);
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this article?")) {
+      try {
+        await ArticleApi.delete(id);
+        setArticles((prev) => prev.filter((a: Article) => a.id !== id));
+      } catch (err) {
+        console.error("Delete error:", err);
+        alert("Failed to delete article. Please try again.");
+      }
+    }
+  };
+
+  const handleUpdate = async (id: string) => {
+    try {
+      const updated = await ArticleApi.update(id, editForm);
+      setArticles((prev) =>
+        prev.map((a: Article) => (a.id === id ? updated : a))
+      );
+      setEditingId(null);
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Failed to update article. Please try again.");
+    }
+  };
+
+  const startEditing = (article: Article) => {
+    setEditingId(article.id);
+    setEditForm({ title: article.title, content: article.content });
+  };
 
   if (loading)
     return (
@@ -48,15 +82,70 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
             key={article.id}
             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              {article.title}
-            </h3>
-            <p className="text-gray-600 whitespace-pre-wrap">
-              {article.content}
-            </p>
-            <div className="mt-4 text-sm text-gray-400">
-              Published on {formatDate(article.createdAt)}
-            </div>
+            {editingId === article.id ? (
+              <div className="space-y-4">
+                <input
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, title: e.target.value })
+                  }
+                  className="w-full text-xl font-bold text-gray-900 border-b focus:outline-none focus:border-blue-500 pb-1"
+                />
+                <textarea
+                  value={editForm.content}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, content: e.target.value })
+                  }
+                  className="w-full text-gray-600 resize-none border focus:outline-none focus:border-blue-500 p-2 rounded"
+                  rows={4}
+                />
+                <div className="flex justify-end space-x-2">
+                  <button
+                    onClick={() => setEditingId(null)}
+                    className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleUpdate(article.id)}
+                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {article.title}
+                  </h3>
+                  {user && user.id === article.authorId && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => startEditing(article)}
+                        className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors duration-200"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(article.id)}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors duration-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-gray-600 whitespace-pre-wrap">
+                  {article.content}
+                </p>
+                <div className="mt-4 text-sm text-gray-400">
+                  Published on {formatDate(article.createdAt)}
+                </div>
+              </>
+            )}
           </div>
         ))
       )}
