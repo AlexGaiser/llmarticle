@@ -2,7 +2,7 @@
 
 ## Disclaimer
 
-This project was almost entirely created by an LLM. I am not responsible for it's relatively low quality and poor extensibility. Take a look around and you will probably notice some interesting artifacts.
+This project was almost entirely created by an LLM as an exercise.
 
 ## Description
 
