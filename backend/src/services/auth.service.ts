@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/db/prisma';
 import { generateToken } from '@/utils/token';
 import { UserPublic } from '@/types';
+import { UserDAO } from '@/db/UserDAO';
 
 interface AuthResult {
   token: string;
@@ -9,13 +10,13 @@ interface AuthResult {
 }
 
 export const registerUser = async (email: string, password: string): Promise<AuthResult> => {
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const existingUser = await UserDAO.findUnique({ where: { email } });
   if (existingUser) {
     throw new Error('User already exists');
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
+  const user = await UserDAO.create({
     data: { email, password: hashedPassword },
   });
 
@@ -24,7 +25,7 @@ export const registerUser = async (email: string, password: string): Promise<Aut
 };
 
 export const loginUser = async (email: string, password: string): Promise<AuthResult> => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await UserDAO.findUnique({ where: { email } });
   if (!user) {
     throw new Error('Invalid credentials');
   }
@@ -39,7 +40,7 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
 };
 
 export const getCurrentUser = async (userId: string): Promise<UserPublic | null> => {
-  const user = await prisma.user.findUnique({
+  const user = await UserDAO.findUnique({
     where: { id: userId },
     select: { id: true, email: true, createdAt: true },
   });

@@ -38,3 +38,16 @@ model UserArticle {
 
   @@map("user_articles")
 }
+
+model UserReview {
+  id         String @id @default(cuid())
+  title      String
+  content    String
+  rating     Double
+  reviewLink String? @map("review_link")
+  private    Boolean @default(true)
+  authorId   String @map("author_id")
+  author     User?  @relation(fields: [authorId], references: [id])
+  createdAt  DateTime @default (now()) @map("created_at")
+  updatedAt  DateTime @updatedAt       @map("updated_at")
+}

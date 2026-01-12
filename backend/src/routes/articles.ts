@@ -18,6 +18,7 @@ articlesRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response) 
 articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { title, content } = req.body;
+    const { userId } = req;
 
     if (!title || !content) {
       res.status(400).json({ error: 'Title and content are required' });
