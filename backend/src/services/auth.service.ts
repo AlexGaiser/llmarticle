@@ -9,23 +9,40 @@ interface AuthResult {
   user: UserPublic;
 }
 
-export const registerUser = async (email: string, password: string): Promise<AuthResult> => {
-  const existingUser = await UserDAO.findUnique({ where: { email } });
+export const registerUser = async (
+  username: string,
+  password: string,
+  email?: string,
+): Promise<AuthResult> => {
+  const existingUser = await UserDAO.findUnique({ where: { username } });
   if (existingUser) {
-    throw new Error('User already exists');
+    throw new Error('Username already exists');
+  }
+
+  if (email) {
+    const existingEmail = await UserDAO.findUnique({ where: { email } });
+    if (existingEmail) {
+      throw new Error('Email already exists');
+    }
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await UserDAO.create({
-    data: { email, password: hashedPassword },
+    data: { username, email, password: hashedPassword },
   });
 
   const token = generateToken(user.id);
-  return { token, user: { id: user.id, email: user.email } };
+  return { token, user: { id: user.id, username: user.username } };
 };
 
-export const loginUser = async (email: string, password: string): Promise<AuthResult> => {
-  const user = await UserDAO.findUnique({ where: { email } });
+export const loginUser = async (identifier: string, password: string): Promise<AuthResult> => {
+  // Try finding by username first, then email
+  let user = await UserDAO.findUnique({ where: { username: identifier } });
+
+  if (!user && identifier.includes('@')) {
+    user = await UserDAO.findUnique({ where: { email: identifier } });
+  }
+
   if (!user) {
     throw new Error('Invalid credentials');
   }
@@ -36,13 +53,13 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
   }
 
   const token = generateToken(user.id);
-  return { token, user: { id: user.id, email: user.email } };
+  return { token, user: { id: user.id, username: user.username } };
 };
 
 export const getCurrentUser = async (userId: string): Promise<UserPublic | null> => {
   const user = await UserDAO.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, createdAt: true },
+    select: { id: true, username: true, createdAt: true },
   });
   return user;
 };

@@ -7,34 +7,35 @@ import { getCookieOptions } from '@/config/auth';
 export const authRouter = Router();
 
 authRouter.post('/register', async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password are required' });
+  if (!username || !password) {
+    res.status(400).json({ error: 'Username and password are required' });
     return;
   }
 
   try {
-    const { token, user } = await registerUser(email, password);
+    const { token, user } = await registerUser(username, password);
     res.cookie('token', token, getCookieOptions(req));
     res.status(201).json({ user });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to register user';
-    const status = message === 'User already exists' ? 409 : 500;
+    const status =
+      message === 'Username already exists' || message === 'Email already exists' ? 409 : 500;
     res.status(status).json({ error: message });
   }
 });
 
 authRouter.post('/login', async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password are required' });
+  if (!username || !password) {
+    res.status(400).json({ error: 'username and password are required' });
     return;
   }
 
   try {
-    const { token, user } = await loginUser(email, password);
+    const { token, user } = await loginUser(username, password);
     res.cookie('token', token, getCookieOptions(req));
     res.json({ user });
   } catch (error) {

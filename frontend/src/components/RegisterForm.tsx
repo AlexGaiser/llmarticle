@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { UI_MESSAGES } from "@/constants/messages";
 
 export const RegisterForm = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export const RegisterForm = () => {
     }
 
     try {
-      await register(email, password);
+      await register(username, password);
     } catch {
       setError(UI_MESSAGES.AUTH.REGISTER_ERROR);
     } finally {
@@ -41,15 +41,15 @@ export const RegisterForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Email
+            Username
           </label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
             required
-            placeholder="Enter your email"
+            placeholder="Enter username"
           />
         </div>
         <div className="mb-4">
