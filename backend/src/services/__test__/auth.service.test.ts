@@ -1,5 +1,5 @@
-import { registerUser, loginUser } from './auth.service';
 import { prisma } from '@/db/prisma';
+import { loginUser, registerUser } from '@/services/auth.service';
 import bcrypt from 'bcryptjs';
 
 jest.mock('@/db/prisma', () => ({
@@ -26,12 +26,29 @@ describe('AuthService', () => {
   });
 
   describe('registerUser', () => {
-    it('should register a new user', async () => {
+    it('should register a new user with username', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
       (prisma.user.create as jest.Mock).mockResolvedValue({
         id: '1',
-        email: 'test@example.com',
+        username: 'testuser_123',
+        password: 'hashed-password',
+      });
+
+      const result = await registerUser('testuser_123', 'password');
+
+      expect(result).toEqual({
+        token: 'mock-token',
+        user: { id: '1', username: 'testuser_123' },
+      });
+    });
+
+    it('should register a new user with email', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
+      (prisma.user.create as jest.Mock).mockResolvedValue({
+        id: '1',
+        username: 'test@example.com',
         password: 'hashed-password',
       });
 
@@ -39,7 +56,7 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         token: 'mock-token',
-        user: { id: '1', email: 'test@example.com' },
+        user: { id: '1', username: 'test@example.com' },
       });
     });
 
@@ -47,7 +64,7 @@ describe('AuthService', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue({ id: '1' });
 
       await expect(registerUser('test@example.com', 'password')).rejects.toThrow(
-        'User already exists',
+        'Username already exists',
       );
     });
   });
@@ -56,7 +73,7 @@ describe('AuthService', () => {
     it('should login a user with valid credentials', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue({
         id: '1',
-        email: 'test@example.com',
+        username: 'test@example.com',
         password: 'hashed-password',
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
@@ -65,7 +82,7 @@ describe('AuthService', () => {
 
       expect(result).toEqual({
         token: 'mock-token',
-        user: { id: '1', email: 'test@example.com' },
+        user: { id: '1', username: 'test@example.com' },
       });
     });
 

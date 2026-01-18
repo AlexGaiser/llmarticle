@@ -36,12 +36,7 @@ export const registerUser = async (
 };
 
 export const loginUser = async (identifier: string, password: string): Promise<AuthResult> => {
-  // Try finding by username first, then email
-  let user = await UserDAO.findUnique({ where: { username: identifier } });
-
-  if (!user && identifier.includes('@')) {
-    user = await UserDAO.findUnique({ where: { email: identifier } });
-  }
+  const user = await UserDAO.findUnique({ where: { username: identifier } });
 
   if (!user) {
     throw new Error('Invalid credentials');

@@ -1,5 +1,5 @@
-import { ArticleService } from './article.service';
 import { prisma } from '@/db/prisma';
+import { ArticleService } from '@/services/article.service';
 
 jest.mock('@/db/prisma', () => ({
   prisma: {
