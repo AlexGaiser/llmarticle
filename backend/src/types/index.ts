@@ -12,6 +12,7 @@ export interface JwtPayload {
 
 export interface UserPublic {
   id: string;
-  email: string;
+  username: string;
+  email?: string;
   createdAt?: Date;
 }

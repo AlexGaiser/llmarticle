@@ -1,27 +1,28 @@
-import { prisma } from '@/db/prisma';
+import { UserArticleDAO } from '@/db/UserArticleDAO';
+import { AuthorId } from '@/model/UserArticle.model';
 
 export interface CreateArticleInput {
   title: string;
   content: string;
-  authorId: string;
+  authorId: AuthorId;
 }
 
 export const ArticleService = {
-  findByAuthor: async (authorId: string) => {
-    return prisma.userArticle.findMany({
+  findByAuthor: async (authorId: AuthorId) => {
+    return UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
     });
   },
 
   create: async ({ title, content, authorId }: CreateArticleInput) => {
-    return prisma.userArticle.create({
+    return UserArticleDAO.create({
       data: { title, content, authorId },
     });
   },
 
-  update: async (id: string, authorId: string, data: { title?: string; content?: string }) => {
-    const article = await prisma.userArticle.findFirst({
+  update: async (id: string, authorId: AuthorId, data: { title?: string; content?: string }) => {
+    const article = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });
 
@@ -29,14 +30,14 @@ export const ArticleService = {
       throw new Error('Article not found or unauthorized');
     }
 
-    return prisma.userArticle.update({
+    return UserArticleDAO.update({
       where: { id },
       data,
     });
   },
 
-  delete: async (id: string, authorId: string) => {
-    const article = await prisma.userArticle.findFirst({
+  delete: async (id: string, authorId: AuthorId) => {
+    const article = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });
 
@@ -44,7 +45,7 @@ export const ArticleService = {
       throw new Error('Article not found or unauthorized');
     }
 
-    return prisma.userArticle.delete({
+    return UserArticleDAO.delete({
       where: { id },
     });
   },
