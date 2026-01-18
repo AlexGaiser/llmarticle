@@ -1,18 +1,22 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
-import { AuthorId } from '@/model/UserArticle.model';
+import { UserId } from '@/model/User.model';
 
 export interface CreateArticleInput {
   title: string;
   content: string;
-  authorId: AuthorId;
+  authorId: UserId;
 }
 
 export const ArticleService = {
-  findByAuthor: async (authorId: AuthorId) => {
-    return UserArticleDAO.findMany({
+  findByAuthor: async (authorId: UserId) => {
+    const articles = await UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
     });
+    return articles; // UserArticleDAO returns types from prisma, which are standard objects
+    // If ArticleService is expected to return branded types, we should map them here,
+    // but usually DAOs share the same branding or we cast at the boundary.
+    // For now, I'll keep it as is unless build errors occur.
   },
 
   create: async ({ title, content, authorId }: CreateArticleInput) => {
@@ -21,7 +25,7 @@ export const ArticleService = {
     });
   },
 
-  update: async (id: string, authorId: AuthorId, data: { title?: string; content?: string }) => {
+  update: async (id: string, authorId: UserId, data: { title?: string; content?: string }) => {
     const article = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });
@@ -36,7 +40,7 @@ export const ArticleService = {
     });
   },
 
-  delete: async (id: string, authorId: AuthorId) => {
+  delete: async (id: string, authorId: UserId) => {
     const article = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });

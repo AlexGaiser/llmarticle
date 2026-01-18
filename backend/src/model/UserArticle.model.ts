@@ -1,5 +1,3 @@
-export type AuthorId = string;
+export type ArticleId = string & { readonly __brand: unique symbol };
 
-export const AuthorId = (id: string): AuthorId => {
-  return id;
-};
+export const ArticleId = (id: string): ArticleId => id as ArticleId;

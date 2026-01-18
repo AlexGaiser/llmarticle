@@ -1,7 +1,9 @@
-export type UserEmail = `${string}@${string}.${string}`;
+export type UserEmail = string & { readonly __brand: unique symbol };
+export const UserEmail = (email: string): UserEmail => email as UserEmail;
 
-export const UserEmail = (email: UserEmail): UserEmail => email;
+export type UserName = string & { readonly __brand: unique symbol };
+export const UserName = (userName: string): UserName => userName as UserName;
 
-export type UserName = string;
+export type UserId = string & { readonly __brand: unique symbol };
 
-export const UserName = (userName: string): UserName => userName;
+export const UserId = (userId: string): UserId => userId as UserId;

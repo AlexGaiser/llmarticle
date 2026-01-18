@@ -2,6 +2,10 @@ import { Router, Response } from 'express';
 import { authMiddleware } from '@/middleware/auth';
 import { AuthRequest } from '@/types';
 import { ArticleService } from '@/services/article.service';
+import {
+  CreateArticleRequest,
+  UpdateArticleRequest,
+} from '@/types/articles/articles.requests.model';
 
 export const articlesRouter = Router();
 
@@ -15,7 +19,7 @@ articlesRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response) 
   }
 });
 
-articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+articlesRouter.post('/', authMiddleware, async (req: CreateArticleRequest, res: Response) => {
   try {
     const { title, content } = req.body;
     const { userId } = req;
@@ -38,10 +42,22 @@ articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response)
   }
 });
 
-articlesRouter.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+articlesRouter.put('/:id', authMiddleware, async (req: UpdateArticleRequest, res: Response) => {
   try {
+    const { id } = req.params;
+    const { userId } = req;
+
+    if (!id) {
+      res.status(400).json({ error: 'Article ID is required' });
+      return;
+    }
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
     const { title, content } = req.body;
-    const article = await ArticleService.update(req.params.id, req.userId!, { title, content });
+    const article = await ArticleService.update(id, userId!, { title, content });
     res.json(article);
   } catch (error: any) {
     if (error.message === 'Article not found or unauthorized') {

@@ -9,6 +9,7 @@ import { rateLimit } from 'express-rate-limit';
 import { corsConfig } from '@/config/cors';
 import { articlesRouter } from '@/routes/articles';
 import { authRouter } from '@/routes/auth';
+import { reviewsRouter } from '@/routes/reviews';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,6 +32,7 @@ app.use(cookieParser());
 
 app.use('/v1/auth', authRouter);
 app.use('/v1/articles', articlesRouter);
+app.use('/v1/reviews', reviewsRouter);
 
 app.get('/ping', (req: Request, res: Response) => {
   res.send('pong');

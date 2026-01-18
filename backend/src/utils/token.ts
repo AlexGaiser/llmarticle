@@ -40,10 +40,12 @@ export const verifyToken = (token: string): JwtPayload => {
   return decoded;
 };
 
+import { UserId } from '@/model/User.model';
+
 /**
  * Generates a JWT token for a user
  */
-export const generateToken = (userId: string): string => {
+export const generateToken = (userId: UserId): string => {
   return jwt.sign({ userId }, TOKEN_CONFIG.secret, {
     expiresIn: TOKEN_CONFIG.expiresIn as SignOptions['expiresIn'],
   });

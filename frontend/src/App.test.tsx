@@ -26,7 +26,7 @@ describe("App", () => {
     // Setup mocks
     vi.mocked(AuthApi.getCurrentUser).mockResolvedValue({
       id: "1",
-      email: "test@example.com",
+      username: "test@example.com",
       createdAt: new Date().toISOString(),
     });
 
