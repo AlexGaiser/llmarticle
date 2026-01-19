@@ -1,5 +1,5 @@
-import apiClient from "./client";
-import { type User } from "@/types";
+import apiClient from "@/api/client";
+import type { User } from "@shared-types/data/User.model";
 
 export interface AuthResponse {
   user: User;

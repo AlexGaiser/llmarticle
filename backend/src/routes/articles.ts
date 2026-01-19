@@ -5,10 +5,13 @@ import { ArticleService } from '@/services/article.service';
 import {
   CreateArticleRequest,
   UpdateArticleRequest,
-  CreateUpdateArticleBody,
 } from '@/types/articles/articles.requests.model';
+import {
+  ArticleData,
+  ArticleId,
+  CreateUpdateArticleData,
+} from '@shared-types/data/UserArticle.model';
 import { UpdateArticleParams } from '@shared-types/requests/article.request';
-import { ArticleId } from '@shared-types/data/UserArticle.model';
 
 export const articlesRouter = Router();
 
@@ -45,10 +48,10 @@ articlesRouter.post('/', authMiddleware, async (req: CreateArticleRequest, res: 
   }
 });
 
-articlesRouter.put<UpdateArticleParams, any, CreateUpdateArticleBody>(
+articlesRouter.put<UpdateArticleParams, any, CreateUpdateArticleData>(
   '/:id',
   authMiddleware,
-  async (req: UpdateArticleRequest, res: Response) => {
+  async (req: UpdateArticleRequest, res: Response<ArticleData | { error: string }>) => {
     try {
       const { id } = req.params;
       const { userId } = req;
@@ -64,8 +67,7 @@ articlesRouter.put<UpdateArticleParams, any, CreateUpdateArticleBody>(
 
       const { title, content } = req.body;
       const articleId = ArticleId(id);
-      const article = await ArticleService.update({
-        id: articleId,
+      const article = await ArticleService.update(articleId, {
         title,
         content,
         authorId: userId,

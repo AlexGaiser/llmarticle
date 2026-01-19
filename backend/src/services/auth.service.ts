@@ -1,13 +1,12 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/db/prisma';
 import { generateToken } from '@/utils/token';
-import { UserPublic } from '@/types';
 import { UserDAO } from '@/db/UserDAO';
-import { UserId, UserName, UserEmail } from '@shared-types/data/User.model';
+import { UserId, UserName, UserEmail, User } from '@shared-types/data/User.model';
 
 interface AuthResult {
   token: string;
-  user: UserPublic;
+  user: User;
 }
 
 export const registerUser = async (
@@ -65,7 +64,7 @@ export const loginUser = async (identifier: string, password: string): Promise<A
   };
 };
 
-export const getCurrentUser = async (userId: UserId): Promise<UserPublic | null> => {
+export const getCurrentUser = async (userId: UserId): Promise<User | null> => {
   const user = await UserDAO.findUnique({
     where: { id: userId },
     select: { id: true, username: true, createdAt: true, email: true },

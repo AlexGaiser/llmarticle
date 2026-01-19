@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { ArticleApi } from "@/api/articles";
 import { formatDate } from "@/utils/date";
 import { UI_MESSAGES } from "@/constants/messages";
-import { type Article } from "@/types";
 import { useAuth } from "@/context/AuthContext";
+import type {
+  ArticleData,
+  ArticleId,
+  CreateUpdateArticleData,
+} from "@shared-types/data/UserArticle.model";
 
 export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   const { user } = useAuth();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<ArticleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -28,11 +32,11 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
     fetchArticles();
   }, [keyProp]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: ArticleId) => {
     if (window.confirm("Are you sure you want to delete this article?")) {
       try {
         await ArticleApi.delete(id);
-        setArticles((prev) => prev.filter((a: Article) => a.id !== id));
+        setArticles((prev) => prev.filter((a: ArticleData) => a.id !== id));
       } catch (err) {
         console.error("Delete error:", err);
         alert("Failed to delete article. Please try again.");
@@ -40,11 +44,18 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
     }
   };
 
-  const handleUpdate = async (id: string) => {
+  const handleUpdate = async (
+    id: ArticleId,
+    { title, content, authorId }: CreateUpdateArticleData,
+  ) => {
     try {
-      const updated = await ArticleApi.update(id, editForm);
+      const updated = await ArticleApi.update(id, {
+        title,
+        content,
+        authorId,
+      });
       setArticles((prev) =>
-        prev.map((a: Article) => (a.id === id ? updated : a))
+        prev.map((a: ArticleData) => (a.id === id ? updated : a)),
       );
       setEditingId(null);
     } catch (err) {
@@ -53,7 +64,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
     }
   };
 
-  const startEditing = (article: Article) => {
+  const startEditing = (article: ArticleData) => {
     setEditingId(article.id);
     setEditForm({ title: article.title, content: article.content });
   };
@@ -108,7 +119,13 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
                     Cancel
                   </button>
                   <button
-                    onClick={() => handleUpdate(article.id)}
+                    onClick={() =>
+                      handleUpdate(article.id, {
+                        title: editForm.title,
+                        content: editForm.content,
+                        authorId: article.authorId,
+                      })
+                    }
                     className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                   >
                     Save Changes

@@ -1,31 +1,30 @@
-import apiClient from "./client";
-import { type Article } from "@/types";
-
-export interface CreateArticleInput {
-  title: string;
-  content: string;
-}
+import apiClient from "@/api/client";
+import type {
+  ArticleData,
+  ArticleId,
+  CreateUpdateArticleData,
+} from "@shared-types/data/UserArticle.model";
 
 export const ArticleApi = {
-  getAll: async (): Promise<Article[]> => {
+  getAll: async (): Promise<ArticleData[]> => {
     const response = await apiClient.get("/articles");
     return response.data.articles;
   },
 
-  create: async (input: CreateArticleInput): Promise<Article> => {
-    const response = await apiClient.post("/articles", input);
+  create: async (data: CreateUpdateArticleData): Promise<ArticleData> => {
+    const response = await apiClient.post("/articles", data);
     return response.data;
   },
 
   update: async (
-    id: string,
-    input: Partial<CreateArticleInput>
-  ): Promise<Article> => {
-    const response = await apiClient.put(`/articles/${id}`, input);
+    id: ArticleId,
+    data: CreateUpdateArticleData,
+  ): Promise<ArticleData> => {
+    const response = await apiClient.put(`/articles/${id}`, data);
     return response.data;
   },
 
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: ArticleId): Promise<void> => {
     await apiClient.delete(`/articles/${id}`);
   },
 };

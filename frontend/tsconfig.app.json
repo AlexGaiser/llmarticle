@@ -31,5 +31,5 @@
       "@shared-types/*": ["../shared/models/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../shared/models/*"]
 }

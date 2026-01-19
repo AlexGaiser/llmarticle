@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UserId, UserName, UserEmail } from '@shared-types/data/User.model';
+import { UserId, User } from '@shared-types/data/User.model';
 
 export interface AuthRequest<
   P = ParamsDictionary,
@@ -24,9 +24,4 @@ export interface JwtPayload {
   exp?: number;
 }
 
-export interface UserPublic {
-  id: UserId;
-  username: UserName;
-  email?: UserEmail;
-  createdAt?: Date;
-}
+export type { User };
