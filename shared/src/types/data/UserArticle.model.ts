@@ -1,4 +1,4 @@
-import { UserId } from "@shared-types/data/User.model";
+import { UserId } from "./User.model";
 
 export type ArticleId = string & { readonly __brand: unique symbol };
 

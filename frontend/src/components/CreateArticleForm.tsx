@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArticleApi } from "@/api/articles";
 import { UI_MESSAGES } from "@/constants/messages";
+import { useAuth } from "@/context/AuthContext";
 
 interface CreateArticleFormProps {
   onArticleCreated: () => void;
@@ -14,13 +15,18 @@ export const CreateArticleForm = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { user } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      await ArticleApi.create({ title, content });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      await ArticleApi.create({ title, content, authorId: user.id });
       setTitle("");
       setContent("");
       onArticleCreated();

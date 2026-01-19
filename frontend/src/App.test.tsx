@@ -3,7 +3,7 @@ import App from "./App";
 import { describe, it, expect, vi } from "vitest";
 import { AuthApi } from "@/api/auth";
 import { ArticleApi } from "@/api/articles";
-import { UserId, UserName } from "@shared-types/data/User.model";
+import { UserId, UserName } from "@llmarticle/shared/types";
 
 // Mock AuthApi and ArticleApi
 vi.mock("@/api/auth", () => ({

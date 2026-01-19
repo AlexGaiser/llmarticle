@@ -1,6 +1,6 @@
 import { AuthRequestWithBody } from '@/types';
-import { CreateUpdateArticleData } from '@shared-types/data/UserArticle.model';
-import { UpdateArticleParams } from '@shared-types/requests/article.request';
+import { CreateUpdateArticleData } from '@llmarticle/shared/types';
+import { UpdateArticleParams } from '@llmarticle/shared/types';
 
 export interface CreateArticleRequest extends AuthRequestWithBody<CreateUpdateArticleData> {}
 

@@ -3,18 +3,42 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Copy shared package
+COPY shared ./shared
 
-COPY . .
-# Note: VITE_API_URL should be set during build if needed or handled via Nginx proxy
+# Build shared package
+WORKDIR /app/shared
+RUN npm install
 RUN npm run build
 
-# Production stage (using Nginx to serve the built files)
-FROM nginx:stable-alpine
+# Copy frontend package files
+WORKDIR /app
+COPY frontend/package*.json ./frontend/
 
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install frontend dependencies
+WORKDIR /app/frontend
+RUN npm ci
+
+# Copy frontend source and config
+COPY frontend/tsconfig*.json ./
+COPY frontend/vite.config.ts ./
+COPY frontend/postcss.config.js ./
+COPY frontend/tailwind.config.js ./
+COPY frontend/index.html ./
+COPY frontend/src ./src
+COPY frontend/public ./public
+
+# Build static assets
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine AS production
+
+# Copy nginx configuration
+COPY frontend/nginx.conf /etc/nginx/nginx.conf
+
+# Copy built static files from builder
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
 EXPOSE 80 443
 

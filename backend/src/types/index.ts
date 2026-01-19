@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UserId, User } from '@shared-types/data/User.model';
+import { UserId, User } from '@llmarticle/shared/types';
 
 export interface AuthRequest<
   P = ParamsDictionary,

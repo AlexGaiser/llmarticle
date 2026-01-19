@@ -27,9 +27,8 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared-types/*": ["../shared/models/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../shared/models/*"]
+  "include": ["src", "../shared/src/types/*"]
 }

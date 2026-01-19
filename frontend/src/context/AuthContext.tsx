@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { AuthApi } from "@/api/auth";
-import type { User } from "@shared-types/data/User.model";
+import type { User } from "@llmarticle/shared/types";
 
 interface AuthContextType {
   user: User | null;

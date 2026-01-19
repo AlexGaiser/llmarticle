@@ -1,19 +1,18 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
+    "module": "Node16",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared-types/*": ["../shared/models/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "../shared/models/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

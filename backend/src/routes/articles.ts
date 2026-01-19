@@ -10,9 +10,9 @@ import {
   ArticleData,
   ArticleId,
   CreateUpdateArticleData,
-} from '@shared-types/data/UserArticle.model';
-import { UpdateArticleParams } from '@shared-types/requests/article.request';
-import { ErrorResponseBody } from '@shared-types/requests/error.response';
+} from '@llmarticle/shared/types';
+import { UpdateArticleParams } from '@llmarticle/shared/types';
+import { ErrorResponseBody } from '@llmarticle/shared/types';
 
 export const articlesRouter = Router();
 

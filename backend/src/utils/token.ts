@@ -1,7 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JwtPayload } from '@/types';
 import { TOKEN_CONFIG } from '@/config/auth';
-import { UserId } from '@shared-types/data/User.model';
+import { UserId } from '@llmarticle/shared/types';
 
 /**
  * Extracts Bearer token from Authorization header

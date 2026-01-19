@@ -1,6 +1,6 @@
 import { UserReviewDAO } from '@/db/UserReviewDAO';
-import { UserId } from '@shared-types/data/User.model';
-import { CreateUpdateReviewData } from '@shared-types/data/UserReview.model';
+import { UserId } from '@llmarticle/shared/types';
+import { CreateUpdateReviewData } from '@llmarticle/shared/types';
 
 export const createUserReview = async (review: CreateUpdateReviewData) => {
   return UserReviewDAO.create({ data: review });
