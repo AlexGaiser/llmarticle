@@ -3,8 +3,8 @@ import type {
   ArticleData,
   ArticleId,
   CreateUpdateArticleData,
-} from "@shared-types/data/UserArticle.model";
-import type { ErrorResponseBody } from "@shared-types/requests/error.response";
+} from "@llmarticle/shared/types";
+import type { ErrorResponseBody } from "@llmarticle/shared/types";
 
 export const ArticleApi = {
   getAll: async (): Promise<ArticleData[]> => {

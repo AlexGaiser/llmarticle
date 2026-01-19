@@ -13,6 +13,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
 
@@ -27,9 +28,8 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared-types/*": ["../shared/models/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../shared/models/*"]
+  "include": ["src"]
 }

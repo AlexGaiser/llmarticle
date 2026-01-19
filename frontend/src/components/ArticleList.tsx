@@ -7,7 +7,7 @@ import type {
   ArticleData,
   ArticleId,
   CreateUpdateArticleData,
-} from "@shared-types/data/UserArticle.model";
+} from "@llmarticle/shared/types";
 
 export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   const { user } = useAuth();
