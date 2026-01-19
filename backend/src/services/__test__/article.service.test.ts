@@ -1,6 +1,6 @@
 import { prisma } from '@/db/prisma';
 import { ArticleService } from '@/services/article.service';
-import { UserId } from '@/model/User.model';
+import { UserId } from '@shared-types/data/User.model';
 
 jest.mock('@/db/prisma', () => ({
   prisma: {

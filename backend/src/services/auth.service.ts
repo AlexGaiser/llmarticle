@@ -3,7 +3,7 @@ import { prisma } from '@/db/prisma';
 import { generateToken } from '@/utils/token';
 import { UserPublic } from '@/types';
 import { UserDAO } from '@/db/UserDAO';
-import { UserEmail, UserId, UserName } from '@/model/User.model';
+import { UserId, UserName, UserEmail } from '@shared-types/data/User.model';
 
 interface AuthResult {
   token: string;

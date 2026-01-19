@@ -1,5 +1,5 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
-import { UserId } from '@/model/User.model';
+import { UserId } from '@shared-types/data/User.model';
 
 export interface CreateArticleInput {
   title: string;

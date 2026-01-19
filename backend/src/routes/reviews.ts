@@ -7,7 +7,7 @@ import {
 } from '@/services/review.service';
 import { CreateReviewRequest } from '@/types/reviews/review.requests.model';
 import { AuthRequest } from '@/types';
-import { UserId } from '@/model/User.model';
+import { UserId } from '@shared-types/data/User.model';
 export const reviewsRouter = Router();
 
 reviewsRouter.post('/', authMiddleware, async (req: CreateReviewRequest, res: Response) => {

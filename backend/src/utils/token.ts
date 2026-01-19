@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JwtPayload } from '@/types';
 import { TOKEN_CONFIG } from '@/config/auth';
+import { UserId } from '@shared-types/data/User.model';
 
 /**
  * Extracts Bearer token from Authorization header
@@ -39,8 +40,6 @@ export const verifyToken = (token: string): JwtPayload => {
 
   return decoded;
 };
-
-import { UserId } from '@/model/User.model';
 
 /**
  * Generates a JWT token for a user

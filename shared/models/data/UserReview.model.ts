@@ -1,9 +1,9 @@
-import { UserId } from './User.model';
+import { UserId } from "./User.model";
 
 export type ReviewId = string & { readonly __brand: unique symbol };
 export const ReviewId = (id: string): ReviewId => id as ReviewId;
 
-export interface CreateReviewData {
+export interface CreateUpdateReviewData {
   title: string;
   content: string;
   rating: number;

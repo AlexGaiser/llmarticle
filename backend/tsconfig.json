@@ -3,7 +3,6 @@
     "target": "es2020",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -11,9 +10,10 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@shared-types/*": ["../shared/models/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../shared/models/**/*"],
   "exclude": ["node_modules"]
 }
