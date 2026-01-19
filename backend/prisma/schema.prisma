@@ -33,8 +33,9 @@ model UserArticle {
   id        String   @id @default(cuid())
   title     String
   content   String
-  authorId  String?  @map("author_id")
+  authorId  String  @map("author_id")
   author    User?    @relation(fields: [authorId], references: [id])
+  isPrivate  Boolean @default(true) @map("is_private")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt      @map("updated_at")
 
@@ -46,9 +47,9 @@ model UserReview {
   title      String
   content    String
   rating     Int
-  reviewLink String? @map("review_link")
-  private    Boolean @default(true)
-  authorId   String @map("author_id")
+  reviewLink String?  @map("review_link")
+  isPrivate  Boolean  @default(true) @map("is_private")
+  authorId   String   @map("author_id")
   author     User?    @relation(fields: [authorId], references: [id])
   createdAt  DateTime @default (now()) @map("created_at")
   updatedAt  DateTime @updatedAt       @map("updated_at")

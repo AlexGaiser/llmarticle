@@ -19,7 +19,7 @@ export const HomePage = () => {
             <h1 className="text-4xl font-extrabold text-gray-900">
               LLM Article Project
             </h1>
-            <p className="mt-2 text-gray-500">Welcome, {user?.email}</p>
+            <p className="mt-2 text-gray-500">Welcome, {user?.username}</p>
           </div>
           <button
             onClick={logout}

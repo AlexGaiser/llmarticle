@@ -2,20 +2,35 @@ import { Router, Response } from 'express';
 import { authMiddleware } from '@/middleware/auth';
 import { AuthRequest } from '@/types';
 import { ArticleService } from '@/services/article.service';
+import {
+  CreateArticleRequest,
+  UpdateArticleRequest,
+} from '@/types/articles/articles.requests.model';
+import {
+  ArticleData,
+  ArticleId,
+  CreateUpdateArticleData,
+} from '@shared-types/data/UserArticle.model';
+import { UpdateArticleParams } from '@shared-types/requests/article.request';
+import { ErrorResponseBody } from '@shared-types/requests/error.response';
 
 export const articlesRouter = Router();
 
-articlesRouter.get('/', authMiddleware, async (req: AuthRequest, res: Response) => {
-  try {
-    const articles = await ArticleService.findByAuthor(req.userId!);
-    res.json({ articles });
-  } catch (error) {
-    console.error('Error fetching articles:', error);
-    res.status(500).json({ error: 'Failed to fetch articles' });
-  }
-});
+articlesRouter.get(
+  '/',
+  authMiddleware,
+  async (req: AuthRequest, res: Response<ArticleData[] | ErrorResponseBody>) => {
+    try {
+      const articles = await ArticleService.findByAuthor(req.userId!);
+      res.json([...articles]);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      res.status(500).json({ error: 'Failed to fetch articles' });
+    }
+  },
+);
 
-articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+articlesRouter.post('/', authMiddleware, async (req: CreateArticleRequest, res: Response) => {
   try {
     const { title, content } = req.body;
     const { userId } = req;
@@ -38,20 +53,41 @@ articlesRouter.post('/', authMiddleware, async (req: AuthRequest, res: Response)
   }
 });
 
-articlesRouter.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
-  try {
-    const { title, content } = req.body;
-    const article = await ArticleService.update(req.params.id, req.userId!, { title, content });
-    res.json(article);
-  } catch (error: any) {
-    if (error.message === 'Article not found or unauthorized') {
-      res.status(404).json({ error: error.message });
-    } else {
-      console.error('Error updating article:', error);
-      res.status(500).json({ error: 'Failed to update article' });
+articlesRouter.put<UpdateArticleParams, any, CreateUpdateArticleData>(
+  '/:id',
+  authMiddleware,
+  async (req: UpdateArticleRequest, res: Response<ArticleData | { error: string }>) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req;
+
+      if (!id) {
+        res.status(400).json({ error: 'Article ID is required' });
+        return;
+      }
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const { title, content } = req.body;
+      const articleId = ArticleId(id);
+      const article = await ArticleService.update(articleId, {
+        title,
+        content,
+        authorId: userId,
+      });
+      res.json(article);
+    } catch (error: any) {
+      if (error.message === 'Article not found or unauthorized') {
+        res.status(404).json({ error: error.message });
+      } else {
+        console.error('Error updating article:', error);
+        res.status(500).json({ error: 'Failed to update article' });
+      }
     }
-  }
-});
+  },
+);
 
 articlesRouter.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {

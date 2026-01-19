@@ -3,6 +3,7 @@ import App from "./App";
 import { describe, it, expect, vi } from "vitest";
 import { AuthApi } from "@/api/auth";
 import { ArticleApi } from "@/api/articles";
+import { UserId, UserName } from "@shared-types/data/User.model";
 
 // Mock AuthApi and ArticleApi
 vi.mock("@/api/auth", () => ({
@@ -25,9 +26,9 @@ describe("App", () => {
   it("renders headline", async () => {
     // Setup mocks
     vi.mocked(AuthApi.getCurrentUser).mockResolvedValue({
-      id: "1",
-      email: "test@example.com",
-      createdAt: new Date().toISOString(),
+      id: UserId("1"),
+      username: UserName("test@example.com"),
+      createdAt: new Date(),
     });
 
     vi.mocked(ArticleApi.getAll).mockResolvedValue([]);

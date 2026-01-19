@@ -1,27 +1,49 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
-import { AuthorId } from '@/model/UserArticle.model';
+import { UserId } from '@shared-types/data/User.model';
+import {
+  ArticleData,
+  ArticleId,
+  CreateUpdateArticleData,
+} from '@shared-types/data/UserArticle.model';
 
-export interface CreateArticleInput {
+type PrismaArticle = {
+  id: string;
+  authorId: string;
   title: string;
   content: string;
-  authorId: AuthorId;
-}
+  isPrivate: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export const prismaArticleToArticleData = (article: PrismaArticle): ArticleData => {
+  return {
+    ...article,
+    id: ArticleId(article.id),
+    authorId: UserId(article.authorId),
+  };
+};
 
 export const ArticleService = {
-  findByAuthor: async (authorId: AuthorId) => {
-    return UserArticleDAO.findMany({
+  findByAuthor: async (authorId: UserId): Promise<ArticleData[]> => {
+    const articles = await UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
     });
+    return articles.map(prismaArticleToArticleData);
   },
 
-  create: async ({ title, content, authorId }: CreateArticleInput) => {
-    return UserArticleDAO.create({
+  create: async ({ title, content, authorId }: CreateUpdateArticleData): Promise<ArticleData> => {
+    const res = await UserArticleDAO.create({
       data: { title, content, authorId },
     });
+    return prismaArticleToArticleData(res);
   },
 
-  update: async (id: string, authorId: AuthorId, data: { title?: string; content?: string }) => {
+  update: async (
+    id: ArticleId,
+    { authorId, title, content }: CreateUpdateArticleData,
+  ): Promise<ArticleData> => {
     const article = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });
@@ -30,13 +52,15 @@ export const ArticleService = {
       throw new Error('Article not found or unauthorized');
     }
 
-    return UserArticleDAO.update({
+    const res = await UserArticleDAO.update({
       where: { id },
-      data,
+      data: { title, content, authorId },
     });
+
+    return prismaArticleToArticleData(res);
   },
 
-  delete: async (id: string, authorId: AuthorId) => {
+  delete: async (id: string, authorId: UserId) => {
     const article = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });

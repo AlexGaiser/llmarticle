@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { JwtPayload } from '@/types';
 import { TOKEN_CONFIG } from '@/config/auth';
+import { UserId } from '@shared-types/data/User.model';
 
 /**
  * Extracts Bearer token from Authorization header
@@ -43,7 +44,7 @@ export const verifyToken = (token: string): JwtPayload => {
 /**
  * Generates a JWT token for a user
  */
-export const generateToken = (userId: string): string => {
+export const generateToken = (userId: UserId): string => {
   return jwt.sign({ userId }, TOKEN_CONFIG.secret, {
     expiresIn: TOKEN_CONFIG.expiresIn as SignOptions['expiresIn'],
   });

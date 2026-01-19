@@ -1,5 +1,7 @@
 import { prisma } from '@/db/prisma';
 import { ArticleService } from '@/services/article.service';
+import { UserId } from '@shared-types/data/User.model';
+import { ArticleId } from '@shared-types/data/UserArticle.model';
 
 jest.mock('@/db/prisma', () => ({
   prisma: {
@@ -22,7 +24,7 @@ describe('ArticleService', () => {
     const mockArticles = [{ id: '1', title: 'Test' }];
     (prisma.userArticle.findMany as jest.Mock).mockResolvedValue(mockArticles);
 
-    const result = await ArticleService.findByAuthor('user-1');
+    const result = await ArticleService.findByAuthor(UserId('user-1'));
 
     expect(result).toEqual(mockArticles);
     expect(prisma.userArticle.findMany).toHaveBeenCalledWith({
@@ -38,7 +40,7 @@ describe('ArticleService', () => {
     const result = await ArticleService.create({
       title: 'Test',
       content: 'Content',
-      authorId: 'user-1',
+      authorId: UserId('user-1'),
     });
 
     expect(result).toEqual(mockArticle);
@@ -52,7 +54,11 @@ describe('ArticleService', () => {
     (prisma.userArticle.findFirst as jest.Mock).mockResolvedValue(mockArticle);
     (prisma.userArticle.update as jest.Mock).mockResolvedValue(mockArticle);
 
-    const result = await ArticleService.update('1', 'user-1', { title: 'Updated' });
+    const result = await ArticleService.update(ArticleId('1'), {
+      authorId: UserId('user-1'),
+      content: 'Content',
+      title: 'Updated',
+    });
 
     expect(result).toEqual(mockArticle);
     expect(prisma.userArticle.findFirst).toHaveBeenCalledWith({
@@ -60,16 +66,20 @@ describe('ArticleService', () => {
     });
     expect(prisma.userArticle.update).toHaveBeenCalledWith({
       where: { id: '1' },
-      data: { title: 'Updated' },
+      data: { title: 'Updated', content: 'Content', authorId: 'user-1' },
     });
   });
 
   it('should throw error when updating unowned article', async () => {
     (prisma.userArticle.findFirst as jest.Mock).mockResolvedValue(null);
 
-    await expect(ArticleService.update('1', 'user-1', { title: 'Updated' })).rejects.toThrow(
-      'Article not found or unauthorized',
-    );
+    await expect(
+      ArticleService.update(ArticleId('1'), {
+        authorId: UserId('user-1'),
+        content: 'Content',
+        title: 'Updated',
+      }),
+    ).rejects.toThrow('Article not found or unauthorized');
   });
 
   it('should delete an article', async () => {
@@ -77,7 +87,7 @@ describe('ArticleService', () => {
     (prisma.userArticle.findFirst as jest.Mock).mockResolvedValue(mockArticle);
     (prisma.userArticle.delete as jest.Mock).mockResolvedValue(mockArticle);
 
-    await ArticleService.delete('1', 'user-1');
+    await ArticleService.delete('1', UserId('user-1'));
 
     expect(prisma.userArticle.findFirst).toHaveBeenCalledWith({
       where: { id: '1', authorId: 'user-1' },

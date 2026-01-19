@@ -1,18 +1,27 @@
 import { Request } from 'express';
+import { UserId, User } from '@shared-types/data/User.model';
 
-export interface AuthRequest extends Request {
-  userId?: string;
+export interface AuthRequest<
+  P = ParamsDictionary,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any,
+> extends Request<P, ResBody, ReqBody, ReqQuery> {
+  userId?: UserId;
+}
+
+export type AuthRequestWithBody<B = any, P = ParamsDictionary> = AuthRequest<P, any, B>;
+
+export type AuthRequestWithParams<P = ParamsDictionary> = AuthRequest<P>;
+
+export interface ParamsDictionary {
+  [key: string]: string;
 }
 
 export interface JwtPayload {
-  userId: string;
+  userId: UserId;
   iat?: number;
   exp?: number;
 }
 
-export interface UserPublic {
-  id: string;
-  username: string;
-  email?: string;
-  createdAt?: Date;
-}
+export type { User };

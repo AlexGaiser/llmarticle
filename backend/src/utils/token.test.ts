@@ -1,6 +1,7 @@
+import jwt from 'jsonwebtoken';
 import { extractBearerToken, verifyToken, generateToken } from './token';
 import { TOKEN_CONFIG } from '@/config/auth';
-import jwt from 'jsonwebtoken';
+import { UserId } from '@shared-types/data/User.model';
 
 describe('Token Utilities', () => {
   describe('extractBearerToken', () => {
@@ -39,7 +40,7 @@ describe('Token Utilities', () => {
   describe('generateToken', () => {
     it('should generate a valid JWT', () => {
       const userId = '123';
-      const token = generateToken(userId);
+      const token = generateToken(UserId(userId));
 
       const decoded = jwt.verify(token, TOKEN_CONFIG.secret) as any;
       expect(decoded.userId).toBe(userId);
