@@ -4,15 +4,18 @@ import type {
   ArticleId,
   CreateUpdateArticleData,
 } from "@shared-types/data/UserArticle.model";
+import type { ErrorResponseBody } from "@shared-types/requests/error.response";
 
 export const ArticleApi = {
   getAll: async (): Promise<ArticleData[]> => {
-    const response = await apiClient.get("/articles");
-    return response.data.articles;
+    const { data } = await apiClient.get<ArticleData[]>("/articles");
+    return data;
   },
 
-  create: async (data: CreateUpdateArticleData): Promise<ArticleData> => {
-    const response = await apiClient.post("/articles", data);
+  create: async (
+    data: CreateUpdateArticleData,
+  ): Promise<ArticleData | ErrorResponseBody> => {
+    const response = await apiClient.post<ArticleData>("/articles", data);
     return response.data;
   },
 
@@ -20,7 +23,7 @@ export const ArticleApi = {
     id: ArticleId,
     data: CreateUpdateArticleData,
   ): Promise<ArticleData> => {
-    const response = await apiClient.put(`/articles/${id}`, data);
+    const response = await apiClient.put<ArticleData>(`/articles/${id}`, data);
     return response.data;
   },
 

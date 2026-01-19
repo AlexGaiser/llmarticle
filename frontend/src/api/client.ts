@@ -5,6 +5,27 @@ interface ClientConfig {
   withAuth?: boolean;
 }
 
+// ISO 8601 date string pattern
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/;
+
+const deserializeDates = (data: unknown): unknown => {
+  if (typeof data === "string" && ISO_DATE_REGEX.test(data)) {
+    return new Date(data);
+  }
+  if (Array.isArray(data)) {
+    return data.map(deserializeDates);
+  }
+  if (data !== null && typeof data === "object") {
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        deserializeDates(value),
+      ]),
+    );
+  }
+  return data;
+};
+
 export const createApiClient = ({ baseURL }: ClientConfig): AxiosInstance => {
   const client = axios.create({
     baseURL,
@@ -12,6 +33,12 @@ export const createApiClient = ({ baseURL }: ClientConfig): AxiosInstance => {
     headers: {
       "Content-Type": "application/json",
     },
+  });
+
+  // Automatically convert date strings to Date objects in responses
+  client.interceptors.response.use((response) => {
+    response.data = deserializeDates(response.data);
+    return response;
   });
 
   return client;

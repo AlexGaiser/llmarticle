@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArticleApi } from "@/api/articles";
-import { formatDate } from "@/utils/date";
+import { getDateString } from "@/utils/date";
 import { UI_MESSAGES } from "@/constants/messages";
 import { useAuth } from "@/context/AuthContext";
 import type {
@@ -159,7 +159,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
                   {article.content}
                 </p>
                 <div className="mt-4 text-sm text-gray-400">
-                  Published on {formatDate(article.createdAt)}
+                  Published on {getDateString(article.createdAt)}
                 </div>
               </>
             )}

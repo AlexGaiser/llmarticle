@@ -6,28 +6,38 @@ import {
   CreateUpdateArticleData,
 } from '@shared-types/data/UserArticle.model';
 
+type PrismaArticle = {
+  id: string;
+  authorId: string;
+  title: string;
+  content: string;
+  isPrivate: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export const prismaArticleToArticleData = (article: PrismaArticle): ArticleData => {
+  return {
+    ...article,
+    id: ArticleId(article.id),
+    authorId: UserId(article.authorId),
+  };
+};
+
 export const ArticleService = {
-  findByAuthor: async (authorId: UserId) => {
+  findByAuthor: async (authorId: UserId): Promise<ArticleData[]> => {
     const articles = await UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
     });
-    return articles; // UserArticleDAO returns types from prisma, which are standard objects
-    // If ArticleService is expected to return branded types, we should map them here,
-    // but usually DAOs share the same branding or we cast at the boundary.
-    // For now, I'll keep it as is unless build errors occur.
+    return articles.map(prismaArticleToArticleData);
   },
 
   create: async ({ title, content, authorId }: CreateUpdateArticleData): Promise<ArticleData> => {
     const res = await UserArticleDAO.create({
       data: { title, content, authorId },
     });
-    // TODO create a util to convert prisma types to branded types
-    return {
-      ...res,
-      id: ArticleId(res.id),
-      authorId: UserId(res.authorId),
-    };
+    return prismaArticleToArticleData(res);
   },
 
   update: async (
@@ -47,12 +57,7 @@ export const ArticleService = {
       data: { title, content, authorId },
     });
 
-    // TODO create a util to convert prisma types to branded types
-    return {
-      ...res,
-      id: ArticleId(res.id),
-      authorId: UserId(res.authorId),
-    };
+    return prismaArticleToArticleData(res);
   },
 
   delete: async (id: string, authorId: UserId) => {
