@@ -13,6 +13,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
 
@@ -30,5 +31,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../shared/src/types/*"]
+  "include": ["src"]
 }
