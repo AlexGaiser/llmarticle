@@ -5,7 +5,10 @@ import { ArticleService } from '@/services/article.service';
 import {
   CreateArticleRequest,
   UpdateArticleRequest,
+  CreateUpdateArticleBody,
 } from '@/types/articles/articles.requests.model';
+import { UpdateArticleParams } from '@shared-types/requests/article.request';
+import { ArticleId } from '@shared-types/data/UserArticle.model';
 
 export const articlesRouter = Router();
 
@@ -42,32 +45,42 @@ articlesRouter.post('/', authMiddleware, async (req: CreateArticleRequest, res: 
   }
 });
 
-articlesRouter.put('/:id', authMiddleware, async (req: UpdateArticleRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { userId } = req;
+articlesRouter.put<UpdateArticleParams, any, CreateUpdateArticleBody>(
+  '/:id',
+  authMiddleware,
+  async (req: UpdateArticleRequest, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { userId } = req;
 
-    if (!id) {
-      res.status(400).json({ error: 'Article ID is required' });
-      return;
-    }
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
+      if (!id) {
+        res.status(400).json({ error: 'Article ID is required' });
+        return;
+      }
+      if (!userId) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
 
-    const { title, content } = req.body;
-    const article = await ArticleService.update(id, userId!, { title, content });
-    res.json(article);
-  } catch (error: any) {
-    if (error.message === 'Article not found or unauthorized') {
-      res.status(404).json({ error: error.message });
-    } else {
-      console.error('Error updating article:', error);
-      res.status(500).json({ error: 'Failed to update article' });
+      const { title, content } = req.body;
+      const articleId = ArticleId(id);
+      const article = await ArticleService.update({
+        id: articleId,
+        title,
+        content,
+        authorId: userId,
+      });
+      res.json(article);
+    } catch (error: any) {
+      if (error.message === 'Article not found or unauthorized') {
+        res.status(404).json({ error: error.message });
+      } else {
+        console.error('Error updating article:', error);
+        res.status(500).json({ error: 'Failed to update article' });
+      }
     }
-  }
-});
+  },
+);
 
 articlesRouter.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {

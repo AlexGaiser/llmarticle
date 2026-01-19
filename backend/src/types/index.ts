@@ -1,20 +1,18 @@
-import { UserEmail, UserId, UserName } from '@/model/User.model';
 import { Request } from 'express';
+import { UserId, UserName, UserEmail } from '@shared-types/data/User.model';
 
-export interface AuthRequest extends Request {
+export interface AuthRequest<
+  P = ParamsDictionary,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any,
+> extends Request<P, ResBody, ReqBody, ReqQuery> {
   userId?: UserId;
 }
 
-export interface AuthRequestWithBody<T extends {} = {}> extends Exclude<AuthRequest, 'body'> {
-  body: T;
-}
+export type AuthRequestWithBody<B = any, P = ParamsDictionary> = AuthRequest<P, any, B>;
 
-export interface AuthRequestWithParams<T extends ParamsDictionary> extends Exclude<
-  AuthRequest,
-  'params'
-> {
-  params: T;
-}
+export type AuthRequestWithParams<P = ParamsDictionary> = AuthRequest<P>;
 
 export interface ParamsDictionary {
   [key: string]: string;

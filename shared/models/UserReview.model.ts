@@ -1,4 +1,4 @@
-import { UserId } from "./data/User.model";
+import { UserId } from "@shared-types/data/User.model";
 
 export type ReviewId = string & { readonly __brand: unique symbol };
 export const ReviewId = (id: string): ReviewId => id as ReviewId;
@@ -12,14 +12,8 @@ export interface CreateUpdateReviewData {
   authorId: UserId;
 }
 
-export interface ReviewData {
+export interface ReviewData extends CreateUpdateReviewData {
   id: ReviewId;
-  title: string;
-  content: string;
-  rating: number;
-  reviewLink?: string;
-  isPrivate: boolean;
-  authorId: UserId;
   createdAt: Date;
   updatedAt: Date;
 }

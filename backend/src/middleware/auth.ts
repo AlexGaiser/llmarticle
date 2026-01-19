@@ -2,7 +2,11 @@ import { Response, NextFunction } from 'express';
 import { AuthRequest } from '@/types';
 import { verifyToken } from '@/utils/token';
 
-export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {
+export const authMiddleware = <P = any, ResBody = any, ReqBody = any, ReqQuery = any>(
+  req: AuthRequest<P, ResBody, ReqBody, ReqQuery>,
+  res: Response,
+  next: NextFunction,
+): void => {
   const token = req.cookies.token;
 
   if (!token) {
