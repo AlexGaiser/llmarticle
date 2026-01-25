@@ -1,6 +1,10 @@
 # Build stage
 FROM node:20-alpine AS builder
 
+# Add build arguments for environment variables
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 WORKDIR /app
 
 # Copy frontend package files
@@ -19,7 +23,13 @@ COPY src ./src
 COPY public ./public
 
 # Build static assets
-RUN npm run build
+RUN rm -f .env* && \
+    if [ -z "$VITE_API_URL" ]; then echo "ERROR: VITE_API_URL arg is missing!" && exit 1; fi && \
+    echo "VITE_API_URL=$VITE_API_URL" > .env && \
+    echo "--- BUILD ENV ---" && \
+    cat .env && \
+    echo "-----------------" && \
+    npm run build
 
 # Production stage
 FROM nginx:alpine AS production
