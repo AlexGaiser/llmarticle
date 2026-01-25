@@ -1,4 +1,4 @@
-import { UserId } from "./User.model";
+import { UserId } from '@/types/data/User.model';
 
 export type ArticleId = string & { readonly __brand: unique symbol };
 

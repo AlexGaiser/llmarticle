@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/db/prisma';
 import { generateToken } from '@/utils/token';
 import { UserDAO } from '@/db/UserDAO';
-import { UserId, UserName, UserEmail, User } from '@llmarticle/shared/types';
+import { UserId, UserName, UserEmail, User } from '@/types/data/User.model';
 
 interface AuthResult {
   token: string;

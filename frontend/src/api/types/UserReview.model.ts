@@ -1,4 +1,4 @@
-import { UserId } from "./User.model";
+import type { UserId } from "@/api/types/User.model";
 
 export type ReviewId = string & { readonly __brand: unique symbol };
 export const ReviewId = (id: string): ReviewId => id as ReviewId;

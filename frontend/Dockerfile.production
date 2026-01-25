@@ -3,30 +3,20 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy shared package
-COPY shared ./shared
-
-# Build shared package
-WORKDIR /app/shared
-RUN npm install
-RUN npm run build
-
 # Copy frontend package files
-WORKDIR /app
-COPY frontend/package*.json ./frontend/
+COPY package*.json ./
 
 # Install frontend dependencies
-WORKDIR /app/frontend
 RUN npm ci
 
 # Copy frontend source and config
-COPY frontend/tsconfig*.json ./
-COPY frontend/vite.config.ts ./
-COPY frontend/postcss.config.js ./
-COPY frontend/tailwind.config.js ./
-COPY frontend/index.html ./
-COPY frontend/src ./src
-COPY frontend/public ./public
+COPY tsconfig*.json ./
+COPY vite.config.ts ./
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
+COPY index.html ./
+COPY src ./src
+COPY public ./public
 
 # Build static assets
 RUN npm run build
@@ -35,10 +25,10 @@ RUN npm run build
 FROM nginx:alpine AS production
 
 # Copy nginx configuration
-COPY frontend/nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy built static files from builder
-COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80 443
 

@@ -1,5 +1,5 @@
 import apiClient from "@/api/client";
-import type { User } from "@llmarticle/shared/types";
+import type { User } from "@/api/types/User.model";
 
 export interface AuthResponse {
   user: User;
