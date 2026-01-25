@@ -8,7 +8,14 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - NODE_ENV=production
     depends_on:
-      - db
+      db:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - app-network
 
@@ -18,7 +25,8 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     networks:
       - app-network
     volumes:
