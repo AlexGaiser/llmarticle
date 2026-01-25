@@ -6,7 +6,7 @@
     "test": "jest",
     "build": "tsc && tsc-alias",
     "start": "node dist/server.js",
-    "start:dev": "NODE_ENV=development nodemon -r tsconfig-paths/register src/server.ts",
+    "start:local:dev": "NODE_ENV=development nodemon -r tsconfig-paths/register src/server.ts",
     "start:prod": "NODE_ENV=production node dist/server.js",
     "lint": "eslint src/**/*.ts",
     "generate-token": "ts-node -r tsconfig-paths/register scripts/generate-token.ts"
