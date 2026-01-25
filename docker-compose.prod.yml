@@ -11,7 +11,7 @@ services:
       db:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/ping"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/ping"]
       interval: 10s
       timeout: 5s
       retries: 5
