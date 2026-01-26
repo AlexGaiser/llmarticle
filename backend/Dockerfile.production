@@ -12,6 +12,7 @@ RUN npm ci
 # Copy backend source and config
 COPY tsconfig.json ./
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 COPY src ./src
 
 # Generate Prisma client
@@ -28,21 +29,17 @@ RUN apk add --no-cache curl
 
 WORKDIR /app
 
-# Copy package files and install production dependencies only
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Copy Prisma schema and config
-COPY prisma ./prisma
-COPY prisma.config.ts ./
-RUN npx prisma generate
-
-# Copy built application from builder
+# Copy all necessary files from builder
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-# Set environment
-ENV NODE_ENV=production
+# Prune devDependencies to keep image small while preserving Prisma engine
+RUN npm prune --production
 
 EXPOSE 3000
 
+# Match the working 0c9e79 command
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]

@@ -33,7 +33,7 @@ model UserArticle {
   id        String   @id @default(cuid())
   title     String
   content   String
-  authorId  String  @map("author_id")
+  authorId  String   @map("author_id")
   author    User?    @relation(fields: [authorId], references: [id])
   isPrivate  Boolean @default(true) @map("is_private")
   createdAt DateTime @default(now()) @map("created_at")
