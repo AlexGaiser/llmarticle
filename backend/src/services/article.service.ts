@@ -1,18 +1,9 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
+import { UserArticle } from '@/generated/prisma/client';
 import { UserId } from '@/types/data/User.model';
 import { ArticleData, ArticleId, CreateUpdateArticleData } from '@/types/data/UserArticle.model';
 
-type PrismaArticle = {
-  id: string;
-  authorId: string;
-  title: string;
-  content: string;
-  isPrivate: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export const prismaArticleToArticleData = (article: PrismaArticle): ArticleData => {
+export const prismaArticleToArticleData = (article: UserArticle): ArticleData => {
   return {
     ...article,
     id: ArticleId(article.id),
@@ -22,7 +13,7 @@ export const prismaArticleToArticleData = (article: PrismaArticle): ArticleData 
 
 export const ArticleService = {
   findByAuthor: async (authorId: UserId): Promise<ArticleData[]> => {
-    const articles = await UserArticleDAO.findMany({
+    const articles: UserArticle[] = await UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
     });
@@ -40,7 +31,7 @@ export const ArticleService = {
     id: ArticleId,
     { authorId, title, content }: CreateUpdateArticleData,
   ): Promise<ArticleData> => {
-    const article = await UserArticleDAO.findFirst({
+    const article: UserArticle | null = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });
 
@@ -57,7 +48,7 @@ export const ArticleService = {
   },
 
   delete: async (id: string, authorId: UserId) => {
-    const article = await UserArticleDAO.findFirst({
+    const article: UserArticle | null = await UserArticleDAO.findFirst({
       where: { id, authorId },
     });
 
