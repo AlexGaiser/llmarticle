@@ -1,10 +1,9 @@
 import apiClient from "@/api/client";
 import type {
   ArticleData,
-  ArticleId,
   CreateUpdateArticleData,
-} from "@llmarticle/shared/types";
-import type { ErrorResponseBody } from "@llmarticle/shared/types";
+  ArticleId,
+} from "@/api/types/UserArticle.model";
 
 export const ArticleApi = {
   getAll: async (): Promise<ArticleData[]> => {
@@ -12,9 +11,7 @@ export const ArticleApi = {
     return data;
   },
 
-  create: async (
-    data: CreateUpdateArticleData,
-  ): Promise<ArticleData | ErrorResponseBody> => {
+  create: async (data: CreateUpdateArticleData): Promise<ArticleData> => {
     const response = await apiClient.post<ArticleData>("/articles", data);
     return response.data;
   },

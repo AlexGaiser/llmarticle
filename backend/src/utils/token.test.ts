@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { extractBearerToken, verifyToken, generateToken } from './token';
 import { TOKEN_CONFIG } from '@/config/auth';
-import { UserId } from '@llmarticle/shared/types';
+import { UserId } from '@/types/data/User.model';
 
 describe('Token Utilities', () => {
   describe('extractBearerToken', () => {

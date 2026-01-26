@@ -65,12 +65,14 @@ jobs:
 
       - name: Build and Push API Image
         run: |
-          docker build -t $DOCR_REGISTRY/$IMAGE_NAME:api -f backend/Dockerfile.production .
+          docker build -t $DOCR_REGISTRY/$IMAGE_NAME:api -f backend/Dockerfile.production ./backend
           docker push $DOCR_REGISTRY/$IMAGE_NAME:api
 
       - name: Build and Push Web Image
         run: |
-          docker build -t $DOCR_REGISTRY/$IMAGE_NAME:web -f frontend/Dockerfile.production .
+          docker build -t $DOCR_REGISTRY/$IMAGE_NAME:web \
+            --build-arg VITE_API_URL=https://api.llmarticle.alexgaiser.com \
+            -f frontend/Dockerfile.production ./frontend
           docker push $DOCR_REGISTRY/$IMAGE_NAME:web
 
       - name: Prune old images from registry

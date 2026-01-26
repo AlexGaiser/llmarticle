@@ -44,9 +44,14 @@ export const createApiClient = ({ baseURL }: ClientConfig): AxiosInstance => {
   return client;
 };
 
+// Use VITE_API_URL (absolute or relative) or default to /api
+// We check for "undefined" string because Vite can sometimes inject that verbatim
+const rawUrl = import.meta.env.VITE_API_URL;
+const apiBaseUrl = rawUrl && rawUrl !== "undefined" ? rawUrl : "/api";
+
 // Default API client with auth and cookie support
 const apiClient = createApiClient({
-  baseURL: `${import.meta.env.VITE_API_URL}/v1`,
+  baseURL: `${apiBaseUrl}/v1`,
 });
 
 export default apiClient;

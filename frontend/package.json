@@ -5,14 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:local": "VITE_API_URL=http://localhost:3000 vite",
+    "start:local:dev": "VITE_API_URL=http://localhost:3000 vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
   },
   "dependencies": {
-    "@llmarticle/shared": "file:../shared",
     "axios": "^1.13.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

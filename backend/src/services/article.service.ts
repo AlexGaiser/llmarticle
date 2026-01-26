@@ -1,10 +1,6 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
-import { UserId } from '@llmarticle/shared/types';
-import {
-  ArticleData,
-  ArticleId,
-  CreateUpdateArticleData,
-} from '@llmarticle/shared/types';
+import { UserId } from '@/types/data/User.model';
+import { ArticleData, ArticleId, CreateUpdateArticleData } from '@/types/data/UserArticle.model';
 
 type PrismaArticle = {
   id: string;

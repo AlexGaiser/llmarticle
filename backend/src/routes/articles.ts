@@ -6,13 +6,9 @@ import {
   CreateArticleRequest,
   UpdateArticleRequest,
 } from '@/types/articles/articles.requests.model';
-import {
-  ArticleData,
-  ArticleId,
-  CreateUpdateArticleData,
-} from '@llmarticle/shared/types';
-import { UpdateArticleParams } from '@llmarticle/shared/types';
-import { ErrorResponseBody } from '@llmarticle/shared/types';
+import { ArticleData, CreateUpdateArticleData, ArticleId } from '@/types/data/UserArticle.model';
+import { UpdateArticleParams } from '@/types/requests/article.request';
+import { ErrorResponseBody } from '@/types/requests/error.response';
 
 export const articlesRouter = Router();
 

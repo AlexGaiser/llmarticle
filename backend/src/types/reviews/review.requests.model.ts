@@ -1,6 +1,6 @@
 import { AuthRequest, AuthRequestWithParams } from '@/types';
-import { UpdateReviewParams } from '@llmarticle/shared/types';
-import { CreateUpdateReviewData } from '@llmarticle/shared/types';
+import { UpdateReviewParams } from '@/types/requests/review.request';
+import { CreateUpdateReviewData } from '@/types/data/UserReview.model';
 
 export interface CreateReviewRequest extends AuthRequest {
   body: CreateUpdateReviewData;

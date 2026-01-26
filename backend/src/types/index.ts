@@ -1,5 +1,6 @@
+import { User } from '@/generated/prisma/client';
+import { UserId } from '@/types/data/User.model';
 import { Request } from 'express';
-import { UserId, User } from '@llmarticle/shared/types';
 
 export interface AuthRequest<
   P = ParamsDictionary,
