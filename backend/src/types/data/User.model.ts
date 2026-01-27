@@ -13,3 +13,13 @@ export interface User {
   email?: UserEmail;
   createdAt?: Date;
 }
+
+export interface Author {
+  id: UserId;
+  username: UserName;
+}
+
+export const Author = (author: Author): Author => author;
+
+export const prismaToAuthor = ({ id, username }: { id: string; username: string }): Author =>
+  Author({ id: UserId(id), username: UserName(username) });

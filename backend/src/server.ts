@@ -11,7 +11,7 @@ import { articlesRouter } from '@/routes/articles';
 import { authRouter } from '@/routes/auth';
 import { reviewsRouter } from '@/routes/reviews';
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 3000;
 
 // Security Middleware
@@ -42,6 +42,8 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`[server]: Server is running at http://localhost:${port}`);
+  });
+}
