@@ -1,6 +1,16 @@
+import { useState } from "react";
 import { ReviewList } from "@/components/ReviewList";
+import { ReviewForm } from "@/components/ReviewForm";
 
 export const ReviewsPage = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleReviewCreated = () => {
+    setShowForm(false);
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-8">
@@ -12,16 +22,25 @@ export const ReviewsPage = () => {
             Insights and experiences from users across the platform.
           </p>
         </div>
-        <button
-          onClick={() => alert("Review creation coming in Step 3!")}
-          className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm"
-        >
-          Write a Review
-        </button>
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm active:transform active:scale-95"
+          >
+            Write a Review
+          </button>
+        )}
       </div>
 
+      {showForm && (
+        <ReviewForm
+          onReviewCreated={handleReviewCreated}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+
       <div className="space-y-8">
-        <ReviewList />
+        <ReviewList key={refreshKey} />
       </div>
     </div>
   );
