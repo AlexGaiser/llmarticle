@@ -6,14 +6,20 @@ import { CreateUpdateReviewData, ReviewData, ReviewId } from '@/types/data/UserR
 type ReviewWithAuthor = UserReview & { author: { id: string; username: string } };
 
 export const prismaReviewToReviewData = (reviewWithAuthor: ReviewWithAuthor): ReviewData => {
-  const { author, ...review } = reviewWithAuthor;
+  const { author, title, content, rating, isPrivate, createdAt, updatedAt, id, reviewLink } =
+    reviewWithAuthor;
 
   const authorData: Author = prismaToAuthor(author);
 
   return {
-    ...review,
-    id: ReviewId(reviewWithAuthor.id),
-    reviewLink: reviewWithAuthor.reviewLink || undefined,
+    title,
+    content,
+    rating,
+    isPrivate,
+    createdAt,
+    updatedAt,
+    id: ReviewId(id),
+    reviewLink: reviewLink || undefined,
     author: authorData,
   };
 };
