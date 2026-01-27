@@ -3,7 +3,9 @@ import { useAuth } from "@/context/AuthContext";
 import { HomePage } from "@/components/HomePage/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
+import { ReviewsPage } from "@/pages/ReviewsPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { MainLayout } from "@/components/MainLayout";
 
 export const AppRoutes = () => {
   const { user } = useAuth();
@@ -22,10 +24,23 @@ export const AppRoutes = () => {
         path="/"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <MainLayout>
+              <ReviewsPage />
+            </MainLayout>
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/articles"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <HomePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/reviews" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
