@@ -5,6 +5,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { ReviewsPage } from "@/pages/ReviewsPage";
 import { ReviewDetailPage } from "@/pages/ReviewDetailPage";
+import { MyContentPage } from "@/pages/MyContentPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MainLayout } from "@/components/MainLayout";
 
@@ -37,6 +38,16 @@ export const AppRoutes = () => {
           <ProtectedRoute>
             <MainLayout>
               <ReviewDetailPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-content"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <MyContentPage />
             </MainLayout>
           </ProtectedRoute>
         }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreateArticleForm } from "@/components/CreateArticleForm";
+import { ArticleForm } from "@/components/ArticleForm";
 import { ArticleList } from "@/components/ArticleList";
 import { useAuth } from "@/context/AuthContext";
 
@@ -29,7 +29,7 @@ export const HomePage = () => {
           </button>
         </div>
 
-        <CreateArticleForm onArticleCreated={handleArticleCreated} />
+        <ArticleForm onSuccess={handleArticleCreated} />
 
         <div className="border-t border-gray-200 pt-8">
           <ArticleList keyProp={refreshKey} />
