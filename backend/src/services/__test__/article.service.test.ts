@@ -41,11 +41,12 @@ describe('ArticleService', () => {
       title: 'Test',
       content: 'Content',
       authorId: UserId('user-1'),
+      isPrivate: false,
     });
 
     expect(result).toEqual(mockArticle);
     expect(prisma.userArticle.create).toHaveBeenCalledWith({
-      data: { title: 'Test', content: 'Content', authorId: 'user-1' },
+      data: { title: 'Test', content: 'Content', authorId: 'user-1', isPrivate: false },
     });
   });
 
@@ -58,6 +59,7 @@ describe('ArticleService', () => {
       authorId: UserId('user-1'),
       content: 'Content',
       title: 'Updated',
+      isPrivate: false,
     });
 
     expect(result).toEqual(mockArticle);
@@ -66,7 +68,7 @@ describe('ArticleService', () => {
     });
     expect(prisma.userArticle.update).toHaveBeenCalledWith({
       where: { id: '1' },
-      data: { title: 'Updated', content: 'Content', authorId: 'user-1' },
+      data: { title: 'Updated', content: 'Content', authorId: 'user-1', isPrivate: false },
     });
   });
 
@@ -78,6 +80,7 @@ describe('ArticleService', () => {
         authorId: UserId('user-1'),
         content: 'Content',
         title: 'Updated',
+        isPrivate: false,
       }),
     ).rejects.toThrow('Article not found or unauthorized');
   });

@@ -28,7 +28,7 @@ articlesRouter.get(
 
 articlesRouter.post('/', authMiddleware, async (req: CreateArticleRequest, res: Response) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, isPrivate } = req.body;
     const { userId } = req;
 
     if (!title || !content) {
@@ -39,7 +39,8 @@ articlesRouter.post('/', authMiddleware, async (req: CreateArticleRequest, res: 
     const article = await ArticleService.create({
       title,
       content,
-      authorId: req.userId!,
+      authorId: userId!,
+      isPrivate,
     });
 
     res.status(201).json(article);
@@ -66,12 +67,13 @@ articlesRouter.put<UpdateArticleParams, any, CreateUpdateArticleData>(
         return;
       }
 
-      const { title, content } = req.body;
+      const { title, content, isPrivate } = req.body;
       const articleId = ArticleId(id);
       const article = await ArticleService.update(articleId, {
         title,
         content,
         authorId: userId,
+        isPrivate,
       });
       res.json(article);
     } catch (error: any) {

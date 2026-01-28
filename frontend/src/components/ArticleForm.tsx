@@ -17,6 +17,7 @@ export const ArticleForm = ({
 }: ArticleFormProps) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
+  const [isPrivate, setIsPrivate] = useState(initialData?.isPrivate ?? false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +33,7 @@ export const ArticleForm = ({
         throw new Error("User not found");
       }
 
-      const payload = { title, content, authorId: user.id };
+      const payload = { title, content, authorId: user.id, isPrivate };
       let result: ArticleData;
 
       if (initialData) {
@@ -44,6 +45,7 @@ export const ArticleForm = ({
       if (!initialData) {
         setTitle("");
         setContent("");
+        setIsPrivate(false);
       }
 
       onSuccess(result);
@@ -86,6 +88,22 @@ export const ArticleForm = ({
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+          <input
+            type="checkbox"
+            id="isPrivate"
+            checked={isPrivate}
+            onChange={(e) => setIsPrivate(e.target.checked)}
+            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+          />
+          <label
+            htmlFor="isPrivate"
+            className="text-sm font-semibold text-gray-700 cursor-pointer"
+          >
+            Make this article private (only you can see it)
+          </label>
+        </div>
+
         <div>
           <label className="block text-gray-700 text-sm font-semibold mb-2">
             Title
