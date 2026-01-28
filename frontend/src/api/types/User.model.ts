@@ -13,3 +13,8 @@ export interface User {
   email?: UserEmail;
   createdAt?: Date;
 }
+
+export interface Author {
+  id: UserId;
+  username: UserName;
+}

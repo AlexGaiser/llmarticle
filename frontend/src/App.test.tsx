@@ -3,9 +3,10 @@ import App from "./App";
 import { describe, it, expect, vi } from "vitest";
 import { AuthApi } from "@/api/auth";
 import { ArticleApi } from "@/api/articles";
+import { ReviewsApi } from "@/api/reviews";
 import { UserId, UserName } from "@/api/types/User.model";
 
-// Mock AuthApi and ArticleApi
+// Mock APIs
 vi.mock("@/api/auth", () => ({
   AuthApi: {
     getCurrentUser: vi.fn(),
@@ -22,8 +23,15 @@ vi.mock("@/api/articles", () => ({
   },
 }));
 
+vi.mock("@/api/reviews", () => ({
+  ReviewsApi: {
+    getPublicReviews: vi.fn(),
+    getMyReviews: vi.fn(),
+  },
+}));
+
 describe("App", () => {
-  it("renders headline", async () => {
+  it("renders community reviews headline", async () => {
     // Setup mocks
     vi.mocked(AuthApi.getCurrentUser).mockResolvedValue({
       id: UserId("1"),
@@ -32,11 +40,12 @@ describe("App", () => {
     });
 
     vi.mocked(ArticleApi.getAll).mockResolvedValue([]);
+    vi.mocked(ReviewsApi.getPublicReviews).mockResolvedValue([]);
 
     render(<App />);
 
     // Use findByText to wait for the content to appear after loading
-    const headline = await screen.findByText(/LLM Article Project/i);
+    const headline = await screen.findByText(/test/i);
     expect(headline).toBeInTheDocument();
   });
 });
