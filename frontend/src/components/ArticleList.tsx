@@ -3,6 +3,7 @@ import { ArticleApi } from "@/api/articles";
 import { getDateString } from "@/utils/date";
 import { UI_MESSAGES } from "@/constants/messages";
 import { useAuth } from "@/context/AuthContext";
+import { ArticleForm } from "@/components/ArticleForm";
 import type {
   ArticleData,
   ArticleId,
@@ -15,7 +16,6 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ title: "", content: "" });
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -44,16 +44,9 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
     }
   };
 
-  const handleUpdate = async (
-    id: ArticleId,
-    { title, content, authorId }: CreateUpdateArticleData,
-  ) => {
+  const handleUpdate = async (id: ArticleId, data: CreateUpdateArticleData) => {
     try {
-      const updated = await ArticleApi.update(id, {
-        title,
-        content,
-        authorId,
-      });
+      const updated = await ArticleApi.update(id, data);
       setArticles((prev) =>
         prev.map((a: ArticleData) => (a.id === id ? updated : a)),
       );
@@ -66,7 +59,6 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
 
   const startEditing = (article: ArticleData) => {
     setEditingId(article.id);
-    setEditForm({ title: article.title, content: article.content });
   };
 
   if (loading)
@@ -94,50 +86,24 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
           >
             {editingId === article.id ? (
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={editForm.title}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, title: e.target.value })
-                  }
-                  className="w-full text-xl font-bold text-gray-900 border-b focus:outline-none focus:border-blue-500 pb-1"
-                />
-                <textarea
-                  value={editForm.content}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, content: e.target.value })
-                  }
-                  className="w-full text-gray-600 resize-none border focus:outline-none focus:border-blue-500 p-2 rounded"
-                  rows={4}
-                />
-                <div className="flex justify-end space-x-2">
-                  <button
-                    onClick={() => setEditingId(null)}
-                    className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleUpdate(article.id, {
-                        title: editForm.title,
-                        content: editForm.content,
-                        authorId: article.authorId,
-                      })
-                    }
-                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </div>
+              <ArticleForm
+                initialData={article}
+                onSuccess={(updated) => handleUpdate(article.id, updated)}
+                onCancel={() => setEditingId(null)}
+              />
             ) : (
               <>
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {article.title}
-                  </h3>
+                  <div className="flex items-center space-x-3">
+                    <h3 className="text-xl font-bold text-gray-900">
+                      {article.title}
+                    </h3>
+                    {article.isPrivate && (
+                      <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium border border-amber-100">
+                        Private
+                      </span>
+                    )}
+                  </div>
                   {user && user.id === article.authorId && (
                     <div className="flex space-x-2">
                       <button

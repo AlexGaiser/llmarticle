@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { HomePage } from "@/components/HomePage/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { ReviewsPage } from "@/pages/ReviewsPage";
+import { ArticlesPage } from "@/pages/ArticlesPage";
 import { ReviewDetailPage } from "@/pages/ReviewDetailPage";
+import { MyContentPage } from "@/pages/MyContentPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MainLayout } from "@/components/MainLayout";
 
@@ -42,11 +43,21 @@ export const AppRoutes = () => {
         }
       />
       <Route
+        path="/my-content"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <MyContentPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/articles"
         element={
           <ProtectedRoute>
             <MainLayout>
-              <HomePage />
+              <ArticlesPage />
             </MainLayout>
           </ProtectedRoute>
         }

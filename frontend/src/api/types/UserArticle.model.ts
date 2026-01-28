@@ -8,6 +8,7 @@ export interface CreateUpdateArticleData {
   title: string;
   content: string;
   authorId: UserId;
+  isPrivate: boolean;
 }
 
 export interface ArticleData extends CreateUpdateArticleData {
