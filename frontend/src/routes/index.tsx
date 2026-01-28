@@ -4,6 +4,7 @@ import { HomePage } from "@/components/HomePage/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { ReviewsPage } from "@/pages/ReviewsPage";
+import { ReviewDetailPage } from "@/pages/ReviewDetailPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MainLayout } from "@/components/MainLayout";
 
@@ -26,6 +27,16 @@ export const AppRoutes = () => {
           <ProtectedRoute>
             <MainLayout>
               <ReviewsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ReviewDetailPage />
             </MainLayout>
           </ProtectedRoute>
         }

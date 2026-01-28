@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import type { ReviewData } from "@/api/types/UserReview.model";
 import { getDateString } from "@/utils/date";
 
@@ -8,7 +9,10 @@ interface ReviewCardProps {
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <Link
+      to={`/${review.id}`}
+      className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-100 transition-all cursor-pointer group"
+    >
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-bold text-gray-900">{review.title}</h3>
@@ -71,6 +75,6 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
           <span>Updated: {getDateString(review.updatedAt)}</span>
         )}
       </div>
-    </div>
+    </Link>
   );
 };
