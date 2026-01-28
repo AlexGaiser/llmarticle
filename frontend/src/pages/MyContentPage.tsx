@@ -18,6 +18,7 @@ export const MyContentPage = () => {
     null,
   );
   const [editingReview, setEditingReview] = useState<ReviewData | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,6 +101,30 @@ export const MyContentPage = () => {
     );
   }
 
+  if (showCreateForm) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        {activeTab === "articles" ? (
+          <ArticleForm
+            onSuccess={(newArticle) => {
+              setArticles((prev) => [newArticle, ...prev]);
+              setShowCreateForm(false);
+            }}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        ) : (
+          <ReviewForm
+            onReviewCreated={(newReview) => {
+              setReviews((prev) => [newReview, ...prev]);
+              setShowCreateForm(false);
+            }}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -111,26 +136,34 @@ export const MyContentPage = () => {
         </p>
       </div>
 
-      <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-8 w-64">
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl w-64">
+          <button
+            onClick={() => setActiveTab("reviews")}
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
+              activeTab === "reviews"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            My Reviews ({reviews.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("articles")}
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
+              activeTab === "articles"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            My Articles ({articles.length})
+          </button>
+        </div>
         <button
-          onClick={() => setActiveTab("reviews")}
-          className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
-            activeTab === "reviews"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
+          onClick={() => setShowCreateForm(true)}
+          className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm active:transform active:scale-95"
         >
-          My Reviews ({reviews.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("articles")}
-          className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
-            activeTab === "articles"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          My Articles ({articles.length})
+          {activeTab === "articles" ? "Create Article" : "Write Review"}
         </button>
       </div>
 
@@ -226,9 +259,16 @@ export const MyContentPage = () => {
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {article.title}
-                  </h3>
+                  <div className="flex items-center space-x-3">
+                    <h3 className="text-xl font-bold text-gray-900">
+                      {article.title}
+                    </h3>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${article.isPrivate ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"}`}
+                    >
+                      {article.isPrivate ? "Private" : "Public"}
+                    </span>
+                  </div>
                   <p className="mt-1 text-sm text-gray-500">
                     {getDateString(article.createdAt)}
                   </p>

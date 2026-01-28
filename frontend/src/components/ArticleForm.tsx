@@ -2,7 +2,10 @@ import { useState } from "react";
 import { ArticleApi } from "@/api/articles";
 import { UI_MESSAGES } from "@/constants/messages";
 import { useAuth } from "@/context/AuthContext";
-import type { ArticleData } from "@/api/types/UserArticle.model";
+import type {
+  ArticleData,
+  CreateUpdateArticleData,
+} from "@/api/types/UserArticle.model";
 
 interface ArticleFormProps {
   onSuccess: (article: ArticleData) => void;
@@ -33,7 +36,12 @@ export const ArticleForm = ({
         throw new Error("User not found");
       }
 
-      const payload = { title, content, authorId: user.id, isPrivate };
+      const payload: CreateUpdateArticleData = {
+        title,
+        content,
+        authorId: user.id,
+        isPrivate,
+      };
       let result: ArticleData;
 
       if (initialData) {
@@ -62,10 +70,10 @@ export const ArticleForm = ({
 
   return (
     <div
-      className={`bg-white p-6 rounded-xl shadow-lg border border-gray-100 ${!initialData ? "mb-8" : ""} animate-in fade-in slide-in-from-top-4 duration-300`}
+      className={`bg-white p-8 rounded-xl shadow-lg border border-gray-100 ${!initialData ? "mb-12" : ""} animate-in fade-in slide-in-from-top-4 duration-300`}
     >
       <h2 className="text-2xl font-bold mb-6 text-gray-900">
-        {initialData ? "Edit Article" : "Create New Article"}
+        {initialData ? "Edit Article" : "Write a New Article"}
       </h2>
 
       {error && (
@@ -87,26 +95,10 @@ export const ArticleForm = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-          <input
-            type="checkbox"
-            id="isPrivate"
-            checked={isPrivate}
-            onChange={(e) => setIsPrivate(e.target.checked)}
-            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
-          />
-          <label
-            htmlFor="isPrivate"
-            className="text-sm font-semibold text-gray-700 cursor-pointer"
-          >
-            Make this article private (only you can see it)
-          </label>
-        </div>
-
+      <form onSubmit={handleSubmit} className="space-y-6 text-left">
         <div>
           <label className="block text-gray-700 text-sm font-semibold mb-2">
-            Title
+            Article Title
           </label>
           <input
             type="text"
@@ -114,9 +106,10 @@ export const ArticleForm = ({
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
             required
-            placeholder="Enter article title"
+            placeholder="Share an interesting title..."
           />
         </div>
+
         <div>
           <label className="block text-gray-700 text-sm font-semibold mb-2">
             Content
@@ -124,10 +117,26 @@ export const ArticleForm = ({
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all min-h-[250px]"
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all min-h-[300px]"
             required
-            placeholder="Write your article content..."
+            placeholder="Share your full insights and technical analysis..."
           />
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="isPrivateArticle"
+            checked={isPrivate}
+            onChange={(e) => setIsPrivate(e.target.checked)}
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label
+            htmlFor="isPrivateArticle"
+            className="ml-3 text-sm text-gray-600"
+          >
+            Keep this article private (only you can see it)
+          </label>
         </div>
 
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-50">

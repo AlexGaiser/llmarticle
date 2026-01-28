@@ -9,10 +9,7 @@ interface ReviewCardProps {
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
   return (
-    <Link
-      to={`/${review.id}`}
-      className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-100 transition-all cursor-pointer group"
-    >
+    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-bold text-gray-900">{review.title}</h3>
@@ -43,13 +40,20 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
         {review.content}
       </p>
 
-      {review.reviewLink && (
-        <div className="mb-4">
+      <div className="flex flex-wrap gap-3 mb-6">
+        <Link
+          to={`/${review.id}`}
+          className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-sm"
+        >
+          Read full review
+        </Link>
+
+        {review.reviewLink && (
           <a
             href={review.reviewLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center px-3 py-1.5 bg-blue-50 rounded-md transition-colors"
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center px-3 py-1.5 bg-blue-50 rounded-md transition-colors border border-blue-100"
           >
             <svg
               className="mr-2 w-4 h-4"
@@ -66,8 +70,8 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
             </svg>
             Link
           </a>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="flex justify-between items-center text-xs text-gray-400 border-t border-gray-50 pt-4">
         <span>Created: {getDateString(review.createdAt)}</span>
@@ -75,6 +79,6 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({ review }) => {
           <span>Updated: {getDateString(review.updatedAt)}</span>
         )}
       </div>
-    </Link>
+    </div>
   );
 };
