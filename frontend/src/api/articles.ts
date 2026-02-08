@@ -6,6 +6,13 @@ import type {
 } from "@/api/types/UserArticle.model";
 
 export const ArticleApi = {
+  getPublicArticles: async (): Promise<ArticleData[]> => {
+    const { data } = await apiClient.get<{ articles: ArticleData[] }>(
+      "/articles/public",
+    );
+    return data.articles;
+  },
+
   getAll: async (): Promise<ArticleData[]> => {
     const { data } = await apiClient.get<ArticleData[]>("/articles");
     return data;

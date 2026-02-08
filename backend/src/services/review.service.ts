@@ -1,28 +1,9 @@
 import { UserReviewDAO } from '@/db/UserReviewDAO';
 import { UserReview } from '@/generated/prisma/client';
-import { Author, prismaToAuthor, UserId, UserName } from '@/types/data/User.model';
+import { prismaReviewToReviewData } from '@/types/data/prisma-db/datamappers';
+import { ReviewWithAuthor } from '@/types/data/prisma-db/ExtendedPrismaDbTypes.model';
+import { UserId } from '@/types/data/User.model';
 import { CreateUpdateReviewData, ReviewData, ReviewId } from '@/types/data/UserReview.model';
-
-type ReviewWithAuthor = UserReview & { author: { id: string; username: string } };
-
-export const prismaReviewToReviewData = (reviewWithAuthor: ReviewWithAuthor): ReviewData => {
-  const { author, title, content, rating, isPrivate, createdAt, updatedAt, id, reviewLink } =
-    reviewWithAuthor;
-
-  const authorData: Author = prismaToAuthor(author);
-
-  return {
-    title,
-    content,
-    rating,
-    isPrivate,
-    createdAt,
-    updatedAt,
-    id: ReviewId(id),
-    reviewLink: reviewLink || undefined,
-    author: authorData,
-  };
-};
 
 export const createUserReview = async (review: CreateUpdateReviewData): Promise<ReviewData> => {
   const res: ReviewWithAuthor = await UserReviewDAO.create({

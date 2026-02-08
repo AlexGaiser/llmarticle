@@ -4,11 +4,7 @@ import { getDateString } from "@/utils/date";
 import { UI_MESSAGES } from "@/constants/messages";
 import { useAuth } from "@/context/AuthContext";
 import { ArticleForm } from "@/components/ArticleForm";
-import type {
-  ArticleData,
-  ArticleId,
-  CreateUpdateArticleData,
-} from "@/api/types/UserArticle.model";
+import type { ArticleData, ArticleId } from "@/api/types/UserArticle.model";
 
 export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   const { user } = useAuth();
@@ -20,7 +16,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const data = await ArticleApi.getAll();
+        const data = await ArticleApi.getPublicArticles();
         setArticles(data);
       } catch {
         setError(UI_MESSAGES.ARTICLES.LOAD_ERROR);
@@ -44,17 +40,11 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
     }
   };
 
-  const handleUpdate = async (id: ArticleId, data: CreateUpdateArticleData) => {
-    try {
-      const updated = await ArticleApi.update(id, data);
-      setArticles((prev) =>
-        prev.map((a: ArticleData) => (a.id === id ? updated : a)),
-      );
-      setEditingId(null);
-    } catch (err) {
-      console.error("Update error:", err);
-      alert("Failed to update article. Please try again.");
-    }
+  const handleArticleUpdated = (updated: ArticleData) => {
+    setArticles((prev) =>
+      prev.map((a: ArticleData) => (a.id === updated.id ? updated : a)),
+    );
+    setEditingId(null);
   };
 
   const startEditing = (article: ArticleData) => {
@@ -88,7 +78,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
             {editingId === article.id ? (
               <ArticleForm
                 initialData={article}
-                onSuccess={(updated) => handleUpdate(article.id, updated)}
+                onSuccess={handleArticleUpdated}
                 onCancel={() => setEditingId(null)}
               />
             ) : (
@@ -104,7 +94,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
                       </span>
                     )}
                   </div>
-                  {user && user.id === article.authorId && (
+                  {user && user.id === article.author.id && (
                     <div className="flex space-x-2">
                       <button
                         onClick={() => startEditing(article)}
@@ -124,8 +114,9 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
                 <p className="text-gray-600 whitespace-pre-wrap">
                   {article.content}
                 </p>
-                <div className="mt-4 text-sm text-gray-400">
-                  Published on {getDateString(article.createdAt)}
+                <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
+                  <span>By {article.author.username}</span>
+                  <span>Published on {getDateString(article.createdAt)}</span>
                 </div>
               </>
             )}

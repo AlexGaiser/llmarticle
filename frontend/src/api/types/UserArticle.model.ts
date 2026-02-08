@@ -1,4 +1,4 @@
-import type { UserId } from "@/api/types/User.model";
+import type { Author, UserId } from "@/api/types/User.model";
 
 export type ArticleId = string & { readonly __brand: unique symbol };
 
@@ -11,8 +11,12 @@ export interface CreateUpdateArticleData {
   isPrivate: boolean;
 }
 
-export interface ArticleData extends CreateUpdateArticleData {
+export interface ArticleData {
   id: ArticleId;
+  title: string;
+  content: string;
+  isPrivate: boolean;
+  author: Author;
   createdAt: Date;
   updatedAt: Date;
 }

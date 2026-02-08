@@ -1,10 +1,9 @@
 import { prisma } from '@/db/prisma';
-import {
-  ArticleService,
-  ArticleWithAuthor,
-  IncludeAuthorClause,
-  prismaArticleToArticleData,
-} from '@/services/article.service';
+import { DefaultIncludeAuthorClause } from '@/services/__test__/queries.constants';
+import { ArticleService } from '@/services/article.service';
+import { prismaArticleToArticleData } from '@/types/data/prisma-db/datamappers';
+import { ArticleWithAuthor } from '@/types/data/prisma-db/ExtendedPrismaDbTypes.model';
+
 import { UserId } from '@/types/data/User.model';
 import { ArticleData, ArticleId } from '@/types/data/UserArticle.model';
 
@@ -48,7 +47,7 @@ describe('ArticleService', () => {
     expect(prisma.userArticle.findMany).toHaveBeenCalledWith({
       where: { authorId: UserId('user-1') },
       orderBy: { createdAt: 'desc' },
-      ...IncludeAuthorClause,
+      ...DefaultIncludeAuthorClause,
     });
   });
 
@@ -78,7 +77,7 @@ describe('ArticleService', () => {
     expect(result).toEqual(mockArticleData);
     expect(prisma.userArticle.create).toHaveBeenCalledWith({
       data: { title: 'Test', content: 'Content', authorId: 'user-1', isPrivate: false },
-      ...IncludeAuthorClause,
+      ...DefaultIncludeAuthorClause,
     });
   });
 
@@ -113,7 +112,7 @@ describe('ArticleService', () => {
     expect(prisma.userArticle.update).toHaveBeenCalledWith({
       where: { id: ArticleId('1') },
       data: { title: 'Updated', content: 'Content', authorId: UserId('user-1'), isPrivate: false },
-      ...IncludeAuthorClause,
+      ...DefaultIncludeAuthorClause,
     });
   });
 
