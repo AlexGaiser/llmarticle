@@ -1,7 +1,12 @@
 import { prisma } from '@/db/prisma';
-import { ArticleService } from '@/services/article.service';
+import {
+  ArticleService,
+  ArticleWithAuthor,
+  IncludeAuthorClause,
+  prismaArticleToArticleData,
+} from '@/services/article.service';
 import { UserId } from '@/types/data/User.model';
-import { ArticleId } from '@/types/data/UserArticle.model';
+import { ArticleData, ArticleId } from '@/types/data/UserArticle.model';
 
 jest.mock('@/db/prisma', () => ({
   prisma: {
@@ -21,20 +26,46 @@ describe('ArticleService', () => {
   });
 
   it('should find articles by author', async () => {
-    const mockArticles = [{ id: '1', title: 'Test' }];
+    const mockArticles: ArticleWithAuthor[] = [
+      {
+        id: '1',
+        title: 'Test',
+        authorId: 'user-1',
+        author: { id: 'user-1', username: 'user-1' },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        content: 'Content',
+        isPrivate: false,
+      },
+    ];
+
+    const mockArticleData = mockArticles.map((article) => prismaArticleToArticleData(article));
     (prisma.userArticle.findMany as jest.Mock).mockResolvedValue(mockArticles);
 
     const result = await ArticleService.findByAuthor(UserId('user-1'));
 
-    expect(result).toEqual(mockArticles);
+    expect(result).toEqual(mockArticleData);
     expect(prisma.userArticle.findMany).toHaveBeenCalledWith({
-      where: { authorId: 'user-1' },
+      where: { authorId: UserId('user-1') },
       orderBy: { createdAt: 'desc' },
+      ...IncludeAuthorClause,
     });
   });
 
   it('should create an article', async () => {
-    const mockArticle = { id: '1', title: 'Test' };
+    const mockArticle: ArticleWithAuthor = {
+      id: '1',
+      title: 'Test',
+      authorId: 'user-1',
+      author: { id: 'user-1', username: 'user-1' },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      content: 'Content',
+      isPrivate: false,
+    };
+
+    const mockArticleData = prismaArticleToArticleData(mockArticle);
+
     (prisma.userArticle.create as jest.Mock).mockResolvedValue(mockArticle);
 
     const result = await ArticleService.create({
@@ -44,14 +75,27 @@ describe('ArticleService', () => {
       isPrivate: false,
     });
 
-    expect(result).toEqual(mockArticle);
+    expect(result).toEqual(mockArticleData);
     expect(prisma.userArticle.create).toHaveBeenCalledWith({
       data: { title: 'Test', content: 'Content', authorId: 'user-1', isPrivate: false },
+      ...IncludeAuthorClause,
     });
   });
 
   it('should update an article', async () => {
-    const mockArticle = { id: '1', title: 'Updated', authorId: 'user-1' };
+    const mockArticle: ArticleWithAuthor = {
+      id: '1',
+      title: 'Updated',
+      authorId: 'user-1',
+      author: { id: 'user-1', username: 'user-1' },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      content: 'Content',
+      isPrivate: false,
+    };
+
+    const mockArticleData: ArticleData = prismaArticleToArticleData(mockArticle);
+
     (prisma.userArticle.findFirst as jest.Mock).mockResolvedValue(mockArticle);
     (prisma.userArticle.update as jest.Mock).mockResolvedValue(mockArticle);
 
@@ -62,13 +106,14 @@ describe('ArticleService', () => {
       isPrivate: false,
     });
 
-    expect(result).toEqual(mockArticle);
+    expect(result).toEqual(mockArticleData);
     expect(prisma.userArticle.findFirst).toHaveBeenCalledWith({
-      where: { id: '1', authorId: 'user-1' },
+      where: { id: ArticleId('1'), authorId: UserId('user-1') },
     });
     expect(prisma.userArticle.update).toHaveBeenCalledWith({
-      where: { id: '1' },
-      data: { title: 'Updated', content: 'Content', authorId: 'user-1', isPrivate: false },
+      where: { id: ArticleId('1') },
+      data: { title: 'Updated', content: 'Content', authorId: UserId('user-1'), isPrivate: false },
+      ...IncludeAuthorClause,
     });
   });
 
@@ -86,17 +131,17 @@ describe('ArticleService', () => {
   });
 
   it('should delete an article', async () => {
-    const mockArticle = { id: '1', title: 'Test', authorId: 'user-1' };
+    const mockArticle = { id: ArticleId('1'), title: 'Test', authorId: UserId('user-1') };
     (prisma.userArticle.findFirst as jest.Mock).mockResolvedValue(mockArticle);
     (prisma.userArticle.delete as jest.Mock).mockResolvedValue(mockArticle);
 
-    await ArticleService.delete('1', UserId('user-1'));
+    await ArticleService.delete(ArticleId('1'), UserId('user-1'));
 
     expect(prisma.userArticle.findFirst).toHaveBeenCalledWith({
-      where: { id: '1', authorId: 'user-1' },
+      where: { id: ArticleId('1'), authorId: UserId('user-1') },
     });
     expect(prisma.userArticle.delete).toHaveBeenCalledWith({
-      where: { id: '1' },
+      where: { id: ArticleId('1') },
     });
   });
 });

@@ -12,6 +12,7 @@ export interface CreateUpdateReviewData {
   authorId: UserId;
 }
 
+// Currently we are not extending because create does not include author but does include authorId
 export interface ReviewData {
   id: ReviewId;
   title: string;

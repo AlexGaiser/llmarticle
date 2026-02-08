@@ -1,33 +1,51 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
 import { UserArticle } from '@/generated/prisma/client';
-import { UserId } from '@/types/data/User.model';
+import { Author, prismaToAuthor, UserId } from '@/types/data/User.model';
 import { ArticleData, ArticleId, CreateUpdateArticleData } from '@/types/data/UserArticle.model';
 
-export const prismaArticleToArticleData = ({
-  id,
-  title,
-  content,
-  authorId,
-  isPrivate,
-  createdAt,
-  updatedAt,
-}: UserArticle): ArticleData => {
+export type ArticleWithAuthor = UserArticle & { author: { id: string; username: string } };
+
+export const IncludeAuthorClause = {
+  include: {
+    author: {
+      select: {
+        id: true,
+        username: true,
+      },
+    },
+  },
+};
+
+export const prismaArticleToArticleData = (articleWithAuthor: ArticleWithAuthor): ArticleData => {
+  const { author, id, title, content, isPrivate, createdAt, updatedAt } = articleWithAuthor;
+  const authorData: Author = prismaToAuthor(author);
+
   return {
     id: ArticleId(id),
     title,
     content,
-    authorId: UserId(authorId),
     isPrivate,
+    author: authorData,
     createdAt,
     updatedAt,
   };
 };
 
+export const getAllPublicArticles = async (): Promise<ArticleData[]> => {
+  const articles = await UserArticleDAO.findMany({
+    where: { isPrivate: false },
+    orderBy: { updatedAt: 'desc' },
+    ...IncludeAuthorClause,
+  });
+  return articles.map(prismaArticleToArticleData);
+};
+
 export const ArticleService = {
   findByAuthor: async (authorId: UserId): Promise<ArticleData[]> => {
-    const articles: UserArticle[] = await UserArticleDAO.findMany({
+    const articles = await UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
+      ...IncludeAuthorClause,
     });
     return articles.map(prismaArticleToArticleData);
   },
@@ -40,6 +58,7 @@ export const ArticleService = {
   }: CreateUpdateArticleData): Promise<ArticleData> => {
     const res = await UserArticleDAO.create({
       data: { title, content, authorId, isPrivate },
+      ...IncludeAuthorClause,
     });
     return prismaArticleToArticleData(res);
   },
@@ -59,6 +78,7 @@ export const ArticleService = {
     const res = await UserArticleDAO.update({
       where: { id },
       data: { title, content, authorId, isPrivate },
+      ...IncludeAuthorClause,
     });
 
     return prismaArticleToArticleData(res);
