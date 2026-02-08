@@ -1,33 +1,25 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
 import { UserArticle } from '@/generated/prisma/client';
+import { DefaultIncludeAuthorClause } from '@/services/__test__/queries.constants';
+import { prismaArticleToArticleData } from '@/types/data/prisma-db/datamappers';
 import { UserId } from '@/types/data/User.model';
 import { ArticleData, ArticleId, CreateUpdateArticleData } from '@/types/data/UserArticle.model';
 
-export const prismaArticleToArticleData = ({
-  id,
-  title,
-  content,
-  authorId,
-  isPrivate,
-  createdAt,
-  updatedAt,
-}: UserArticle): ArticleData => {
-  return {
-    id: ArticleId(id),
-    title,
-    content,
-    authorId: UserId(authorId),
-    isPrivate,
-    createdAt,
-    updatedAt,
-  };
+export const getAllPublicArticles = async (): Promise<ArticleData[]> => {
+  const articles = await UserArticleDAO.findMany({
+    where: { isPrivate: false },
+    orderBy: { updatedAt: 'desc' },
+    ...DefaultIncludeAuthorClause,
+  });
+  return articles.map(prismaArticleToArticleData);
 };
 
 export const ArticleService = {
   findByAuthor: async (authorId: UserId): Promise<ArticleData[]> => {
-    const articles: UserArticle[] = await UserArticleDAO.findMany({
+    const articles = await UserArticleDAO.findMany({
       where: { authorId },
       orderBy: { createdAt: 'desc' },
+      ...DefaultIncludeAuthorClause,
     });
     return articles.map(prismaArticleToArticleData);
   },
@@ -40,6 +32,7 @@ export const ArticleService = {
   }: CreateUpdateArticleData): Promise<ArticleData> => {
     const res = await UserArticleDAO.create({
       data: { title, content, authorId, isPrivate },
+      ...DefaultIncludeAuthorClause,
     });
     return prismaArticleToArticleData(res);
   },
@@ -59,6 +52,7 @@ export const ArticleService = {
     const res = await UserArticleDAO.update({
       where: { id },
       data: { title, content, authorId, isPrivate },
+      ...DefaultIncludeAuthorClause,
     });
 
     return prismaArticleToArticleData(res);

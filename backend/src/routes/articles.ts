@@ -1,7 +1,7 @@
 import { Router, Response } from 'express';
 import { authMiddleware } from '@/middleware/auth';
 import { AuthRequest } from '@/types';
-import { ArticleService } from '@/services/article.service';
+import { ArticleService, getAllPublicArticles } from '@/services/article.service';
 import {
   CreateArticleRequest,
   UpdateArticleRequest,
@@ -11,6 +11,20 @@ import { UpdateArticleParams } from '@/types/requests/article.request';
 import { ErrorResponseBody } from '@/types/requests/error.response';
 
 export const articlesRouter = Router();
+
+// Public endpoint - no auth required
+articlesRouter.get(
+  '/public',
+  async (_req, res: Response<{ articles: ArticleData[] } | ErrorResponseBody>) => {
+    try {
+      const articles = await getAllPublicArticles();
+      res.json({ articles });
+    } catch (error) {
+      console.error('Error fetching public articles:', error);
+      res.status(500).json({ error: 'Failed to fetch public articles' });
+    }
+  },
+);
 
 articlesRouter.get(
   '/',
