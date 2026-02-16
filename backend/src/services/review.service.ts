@@ -1,5 +1,6 @@
 import { UserReviewDAO } from '@/db/UserReviewDAO';
-import { UserReview } from '@/generated/prisma/client';
+import { CursorPaginationOptions, OffsetPaginationOptions } from '@/types/data/Pagination.model';
+import { DEFAULT_PAGE_LIMIT } from '@/services/constants/queries.constants';
 import { prismaReviewToReviewData } from '@/types/data/prisma-db/datamappers';
 import { ReviewWithAuthor } from '@/types/data/prisma-db/ExtendedPrismaDbTypes.model';
 import { UserId } from '@/types/data/User.model';
@@ -52,10 +53,43 @@ export const getPublicReviewsByAuthor = async (authorId: UserId): Promise<Review
   return reviews.map(prismaReviewToReviewData);
 };
 
-export const getAllPublicReviews = async (): Promise<ReviewData[]> => {
+export const getPublicReviews = async (
+  options?: OffsetPaginationOptions,
+): Promise<ReviewData[]> => {
+  const limit = options?.limit ?? DEFAULT_PAGE_LIMIT;
+  const skip = 'skip' in (options ?? {}) ? (options as OffsetPaginationOptions).skip : undefined;
+
   const reviews = await UserReviewDAO.findMany({
-    where: { isPrivate: false },
+    where: {
+      isPrivate: false,
+    },
     orderBy: { updatedAt: 'desc' },
+    take: limit,
+    skip,
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
+  });
+  return reviews.map(prismaReviewToReviewData);
+};
+
+export const getCursorPaginatedReviews = async (
+  options: CursorPaginationOptions,
+): Promise<ReviewData[]> => {
+  const { limit, cursor } = options;
+
+  const reviews = await UserReviewDAO.findMany({
+    where: {
+      isPrivate: false,
+      ...(cursor && { updatedAt: { lt: cursor } }),
+    },
+    orderBy: { updatedAt: 'desc' },
+    take: limit,
     include: {
       author: {
         select: {

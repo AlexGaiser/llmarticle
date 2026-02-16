@@ -20,6 +20,3 @@ export interface Author {
 }
 
 export const Author = (author: Author): Author => author;
-
-export const prismaToAuthor = ({ id, username }: { id: string; username: string }): Author =>
-  Author({ id: UserId(id), username: UserName(username) });

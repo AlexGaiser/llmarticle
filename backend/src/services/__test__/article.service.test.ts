@@ -1,5 +1,5 @@
 import { prisma } from '@/db/prisma';
-import { DefaultIncludeAuthorClause } from '@/services/__test__/queries.constants';
+import { DefaultIncludeAuthorClause } from '@/services/constants/queries.constants';
 import { ArticleService } from '@/services/article.service';
 import { prismaArticleToArticleData } from '@/types/data/prisma-db/datamappers';
 import { ArticleWithAuthor } from '@/types/data/prisma-db/ExtendedPrismaDbTypes.model';

@@ -34,21 +34,19 @@ describe('Reviews Router Integration', () => {
   });
 
   describe('GET /v1/reviews/public', () => {
-    it('should return a list of public reviews', async () => {
-      (ReviewService.getAllPublicReviews as jest.Mock).mockResolvedValue([mockPublicReview]);
+    it('should return a list of public reviews with nextCursor', async () => {
+      (ReviewService.getPublicReviews as jest.Mock).mockResolvedValue([mockPublicReview]);
 
-      const response = await request(app).get('/v1/reviews/public');
+      const response = await request(app).get('/v1/reviews/public').query({ limit: 1 });
 
       expect(response.status).toBe(200);
       expect(response.body.reviews).toHaveLength(1);
       expect(response.body.reviews[0].id).toBe(mockPublicReview.id);
-      expect(ReviewService.getAllPublicReviews).toHaveBeenCalled();
+      expect(ReviewService.getPublicReviews).toHaveBeenCalled();
     });
 
     it('should handle service errors', async () => {
-      (ReviewService.getAllPublicReviews as jest.Mock).mockRejectedValue(
-        new Error('Service error'),
-      );
+      (ReviewService.getPublicReviews as jest.Mock).mockRejectedValue(new Error('Service error'));
 
       const response = await request(app).get('/v1/reviews/public');
 
