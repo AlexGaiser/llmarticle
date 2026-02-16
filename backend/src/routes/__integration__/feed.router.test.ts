@@ -6,6 +6,7 @@ import { FeedItemType } from '@/types/data/FeedItem.model';
 import { UserId, UserName } from '@/types/data/User.model';
 import { ArticleData, ArticleId } from '@/types/data/UserArticle.model';
 import { ReviewData, ReviewId } from '@/types/data/UserReview.model';
+import { encodeCursor } from '@/routes/utils/paginationUtils';
 
 jest.mock('@/services/article.service');
 jest.mock('@/services/review.service');
@@ -92,13 +93,14 @@ describe('Feed Router Integration', () => {
       (ArticleService.getCursorPaginatedArticles as jest.Mock).mockResolvedValue([mockArticle]);
       (ReviewService.getCursorPaginatedReviews as jest.Mock).mockResolvedValue([]);
 
-      const response = await request(app)
-        .get('/v1/feed')
-        .query({ limit: '10', cursor: new Date().toISOString() });
+      const cursorObj = { updatedAt: new Date(), id: 'some-id' };
+      const cursorStr = encodeCursor(cursorObj);
+
+      const response = await request(app).get('/v1/feed').query({ limit: '10', cursor: cursorStr });
 
       expect(response.status).toBe(200);
       expect(ArticleService.getCursorPaginatedArticles).toHaveBeenCalledWith(
-        expect.objectContaining({ limit: expect.any(Number) }),
+        expect.objectContaining({ limit: 11, cursor: cursorObj }),
       );
     });
 

@@ -1,8 +1,8 @@
-import { getCursorPaginatedArticles, getPublicArticles } from '@/services/article.service';
-import { getPublicReviews, getCursorPaginatedReviews } from '@/services/review.service';
+import { getCursorPaginatedArticles } from '@/services/article.service';
+import { DEFAULT_PAGE_LIMIT } from '@/services/constants/queries.constants';
+import { getCursorPaginatedReviews } from '@/services/review.service';
 import { FeedItem } from '@/types/data/FeedItem.model';
 import { CursorPaginationOptions } from '@/types/data/Pagination.model';
-import { DEFAULT_PAGE_LIMIT } from './constants/queries.constants';
 import { tagArticlesAsFeedItems, tagReviewsAsFeedItems } from '@/types/data/prisma-db/datamappers';
 
 export const getPublicFeed = async (options?: CursorPaginationOptions): Promise<FeedItem[]> => {
@@ -20,9 +20,15 @@ export const getPublicFeed = async (options?: CursorPaginationOptions): Promise<
   const feedArticles = tagArticlesAsFeedItems(articles);
   const feedReviews = tagReviewsAsFeedItems(reviews);
 
-  // Merge, sort by updatedAt descending, and apply limit
+  // Merge, sort by updatedAt descending then by id descending, and apply limit
   const feed = [...feedArticles, ...feedReviews]
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .sort((a, b) => {
+      const timeDiff = b.updatedAt.getTime() - a.updatedAt.getTime();
+      if (timeDiff !== 0) {
+        return timeDiff;
+      }
+      return b.id.localeCompare(a.id);
+    })
     .slice(0, limit);
   return feed;
 };

@@ -86,9 +86,16 @@ export const getCursorPaginatedReviews = async (
   const reviews = await UserReviewDAO.findMany({
     where: {
       isPrivate: false,
-      ...(cursor && { updatedAt: { lt: cursor } }),
+      ...(cursor
+        ? {
+            OR: [
+              { updatedAt: { lt: cursor.updatedAt } },
+              { updatedAt: cursor.updatedAt, id: { lt: cursor.id } },
+            ],
+          }
+        : {}),
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
     take: limit,
     include: {
       author: {

@@ -6,11 +6,11 @@ import {
   CreateArticleRequest,
   UpdateArticleRequest,
 } from '@/types/articles/articles.requests.model';
-import { computeNextCursor, parsePaginationParams } from './utils/paginationUtils';
 import { ArticleData, CreateUpdateArticleData, ArticleId } from '@/types/data/UserArticle.model';
 import { UpdateArticleParams } from '@/types/requests/article.request';
 import { ArticlesResponse } from '@/types/requests/articles.response.model';
 import { ErrorResponseBody } from '@/types/requests/error.response';
+import { parseOffsetPaginationParams } from '@/routes/utils/paginationUtils';
 
 export const articlesRouter = Router();
 
@@ -26,7 +26,7 @@ articlesRouter.get(
   '/public',
   async (req: GetPublicArticlesRequest, res: Response<ArticlesResponse | ErrorResponseBody>) => {
     try {
-      const options = parsePaginationParams(req.query);
+      const options = parseOffsetPaginationParams(req.query);
       const articles = await getPublicArticles(options);
       res.json({ articles });
     } catch (error) {

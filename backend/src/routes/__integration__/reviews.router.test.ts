@@ -34,7 +34,7 @@ describe('Reviews Router Integration', () => {
   });
 
   describe('GET /v1/reviews/public', () => {
-    it('should return a list of public reviews with nextCursor', async () => {
+    it('should return a list of public reviews', async () => {
       (ReviewService.getPublicReviews as jest.Mock).mockResolvedValue([mockPublicReview]);
 
       const response = await request(app).get('/v1/reviews/public').query({ limit: 1 });

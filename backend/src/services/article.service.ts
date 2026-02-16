@@ -1,12 +1,14 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
 import { UserArticle } from '@/generated/prisma/client';
-import { DefaultIncludeAuthorClause } from '@/services/constants/queries.constants';
+import {
+  DEFAULT_PAGE_LIMIT,
+  DefaultIncludeAuthorClause,
+} from '@/services/constants/queries.constants';
 import {
   CursorPaginationOptions,
   OffsetPaginationOptions,
   PaginationOptions,
 } from '@/types/data/Pagination.model';
-import { DEFAULT_PAGE_LIMIT } from './constants/queries.constants';
 import { prismaArticleToArticleData } from '@/types/data/prisma-db/datamappers';
 import { UserId } from '@/types/data/User.model';
 import { ArticleData, ArticleId, CreateUpdateArticleData } from '@/types/data/UserArticle.model';
@@ -33,15 +35,21 @@ export const getPublicArticles = async (
 export const getCursorPaginatedArticles = async (
   options: CursorPaginationOptions,
 ): Promise<ArticleData[]> => {
-  const { limit, cursor } = options;
+  const { limit = DEFAULT_PAGE_LIMIT, cursor } = options;
 
-  const currentCursor = cursor ?? new Date();
   const articles = await UserArticleDAO.findMany({
     where: {
       isPrivate: false,
-      ...(currentCursor && { updatedAt: { lt: currentCursor } }),
+      ...(cursor
+        ? {
+            OR: [
+              { updatedAt: { lt: cursor.updatedAt } },
+              { updatedAt: cursor.updatedAt, id: { lt: cursor.id } },
+            ],
+          }
+        : {}),
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
     take: limit,
     ...DefaultIncludeAuthorClause,
   });

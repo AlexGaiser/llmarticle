@@ -1,52 +1,76 @@
 import {
-  parsePaginationParams,
   computeNextCursor,
+  encodeCursor,
+  decodeCursor,
+  parseCursorPaginationParams,
+  parseOffsetPaginationParams,
   isCursorPaginationOptions,
   isOffsetPaginationOptions,
   getCursorFromOptions,
   getSkipFromOptions,
-} from '../paginationUtils';
+} from '@/routes/utils/paginationUtils';
 import { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } from '@/services/constants/queries.constants';
 import { CursorPaginationOptions, OffsetPaginationOptions } from '@/types/data/Pagination.model';
 
 describe('paginationUtils', () => {
-  describe('parsePaginationParams', () => {
+  describe('encodeCursor & decodeCursor', () => {
+    it('should correctly encode and decode a composite cursor', () => {
+      const originalCursor = { updatedAt: new Date(), id: 'test-id' };
+      const encoded = encodeCursor(originalCursor);
+      const decoded = decodeCursor(encoded);
+
+      expect(decoded).toEqual(originalCursor);
+    });
+
+    it('should return undefined when decoding invalid base64 string', () => {
+      const result = decodeCursor('invalid-base64-string');
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when decoding valid base64 but invalid JSON', () => {
+      const invalidJson = Buffer.from('invalid-json').toString('base64');
+      const result = decodeCursor(invalidJson);
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('parseCursorPaginationParams', () => {
     it('should return default limit when no params provided', () => {
-      const result = parsePaginationParams({});
+      const result = parseCursorPaginationParams({});
       expect(result).toEqual({ limit: DEFAULT_PAGE_LIMIT });
     });
 
-    it('should parse valid limit', () => {
-      const result = parsePaginationParams({ limit: '10' });
-      expect(result).toEqual({ limit: 10 });
-    });
-
     it('should cap limit at MAX_PAGE_LIMIT', () => {
-      const result = parsePaginationParams({ limit: (MAX_PAGE_LIMIT + 1).toString() });
+      const result = parseCursorPaginationParams({ limit: (MAX_PAGE_LIMIT + 1).toString() });
       expect(result).toEqual({ limit: MAX_PAGE_LIMIT });
     });
 
     it('should parse cursor and return CursorPaginationOptions', () => {
-      const dateStr = '2023-01-01T00:00:00.000Z';
-      const result = parsePaginationParams({ cursor: dateStr });
+      const date = new Date('2023-01-01T00:00:00.000Z');
+      const cursorObj = { updatedAt: date, id: '123' };
+      const cursorStr = encodeCursor(cursorObj);
+
+      const result = parseCursorPaginationParams({ cursor: cursorStr });
       expect(isCursorPaginationOptions(result)).toBe(true);
-      expect((result as CursorPaginationOptions).cursor).toEqual(new Date(dateStr));
+      expect(result.cursor).toEqual(cursorObj);
       expect(result.limit).toBe(DEFAULT_PAGE_LIMIT);
     });
+  });
 
-    it('should parse skip and return OffsetPaginationOptions', () => {
-      const result = parsePaginationParams({ skip: '5' });
-      expect(isOffsetPaginationOptions(result)).toBe(true);
-      expect((result as OffsetPaginationOptions).skip).toBe(5);
-      expect(result.limit).toBe(DEFAULT_PAGE_LIMIT);
+  describe('parseOffsetPaginationParams', () => {
+    it('should return default limit and skip 0 when no params provided', () => {
+      const result = parseOffsetPaginationParams({});
+      expect(result).toEqual({ limit: DEFAULT_PAGE_LIMIT, skip: 0 });
     });
 
-    it('should prioritize cursor over skip', () => {
-      const dateStr = '2023-01-01T00:00:00.000Z';
-      const result = parsePaginationParams({ cursor: dateStr, skip: '5' });
-      expect(isCursorPaginationOptions(result)).toBe(true);
-      expect((result as any).skip).toBeUndefined();
-      expect((result as CursorPaginationOptions).cursor).toEqual(new Date(dateStr));
+    it('should parse valid limit and skip', () => {
+      const result = parseOffsetPaginationParams({ limit: '10', skip: '5' });
+      expect(result).toEqual({ limit: 10, skip: 5 });
+    });
+
+    it('should cap limit at MAX_PAGE_LIMIT', () => {
+      const result = parseOffsetPaginationParams({ limit: (MAX_PAGE_LIMIT + 1).toString() });
+      expect(result.limit).toEqual(MAX_PAGE_LIMIT);
     });
   });
 
@@ -63,22 +87,20 @@ describe('paginationUtils', () => {
       expect(result).toBeUndefined();
     });
 
-    it('should return last item updatedAt if items length equals limit', () => {
+    it('should return base64 encoded cursor of last item if items length equals limit', () => {
       const result = computeNextCursor(items, 2);
-      expect(result).toBe(older.toISOString());
-    });
+      const expectedCursor = { updatedAt: older, id: '2' };
+      const decodedResult = decodeCursor(result!);
 
-    // Note: In a real scenario, we might fetch limit + 1 to know if there's a next page.
-    // The utility just takes items and limit and returns cursor if length >= limit.
-    // If the service logic fetches exactly 'limit' items, this utility will always return a cursor
-    // if full page is returned, theoretically correctly.
-    // Typically services fetch limit + 1 or count to determine if next page exists,
-    // but this utility logic is: if we got a full page, return updated of last item as next cursor.
-    // This implies the client will try to fetch next page and get empty results if properly finished.
+      expect(decodedResult).toEqual(expectedCursor);
+    });
   });
 
   describe('Type Guards and Helpers', () => {
-    const cursorOptions: CursorPaginationOptions = { limit: 10, cursor: new Date() };
+    const cursorOptions: CursorPaginationOptions = {
+      limit: 10,
+      cursor: { updatedAt: new Date(), id: '1' },
+    };
     const offsetOptions: OffsetPaginationOptions = { limit: 10, skip: 5 };
     const baseOptions = { limit: 10 };
 

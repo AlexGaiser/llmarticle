@@ -10,12 +10,12 @@ import {
 } from '@/services/review.service';
 import { CreateReviewRequest, UpdateReviewRequest } from '@/types/reviews/review.requests.model';
 import { AuthRequest } from '@/types';
-import { parsePaginationParams } from './utils/paginationUtils';
 import { UserId } from '@/types/data/User.model';
 import { ReviewId, ReviewData, CreateUpdateReviewData } from '@/types/data/UserReview.model';
 import { UpdateReviewParams } from '@/types/requests/review.request';
 import { ErrorResponseBody } from '@/types/requests/error.response';
 import { ReviewsResponse } from '@/types/requests/reviews.response.model';
+import { parseOffsetPaginationParams } from '@/routes/utils/paginationUtils';
 
 export const reviewsRouter = Router();
 
@@ -30,7 +30,7 @@ reviewsRouter.get(
   '/public',
   async (req: GetPublicReviewsRequest, res: Response<ReviewsResponse | ErrorResponseBody>) => {
     try {
-      const options = parsePaginationParams(req.query);
+      const options = parseOffsetPaginationParams(req.query);
       const reviews = await getPublicReviews(options);
       res.json({ reviews });
     } catch (error) {

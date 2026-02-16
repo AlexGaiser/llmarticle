@@ -1,5 +1,10 @@
+export interface CompositeCursor {
+  updatedAt: Date;
+  id: string;
+}
+
 export interface CursorPaginationOptions {
-  cursor?: Date;
+  cursor?: CompositeCursor;
   limit?: number;
 }
 
