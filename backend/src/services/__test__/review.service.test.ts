@@ -1,13 +1,14 @@
 import { prisma } from '@/db/prisma';
-import { DefaultIncludeAuthorClause } from '@/services/__test__/queries.constants';
+import { DefaultIncludeAuthorClause } from '@/services/constants/queries.constants';
 import {
   getReviewsByAuthorId,
   getPublicReviewsByAuthor,
-  getAllPublicReviews,
+  getPublicReviews,
   createUserReview,
   updateReview,
   deleteReview,
 } from '@/services/review.service';
+import { DEFAULT_PAGE_LIMIT } from '@/services/constants/queries.constants';
 import { prismaReviewToReviewData } from '@/types/data/prisma-db/datamappers';
 import { ReviewWithAuthor } from '@/types/data/prisma-db/ExtendedPrismaDbTypes.model';
 
@@ -95,12 +96,13 @@ describe('ReviewService', () => {
 
       (prisma.userReview.findMany as jest.Mock).mockResolvedValue(mockReviews);
 
-      const result = await getAllPublicReviews();
+      const result = await getPublicReviews();
 
       expect(result).toEqual(mockReviewData);
       expect(prisma.userReview.findMany).toHaveBeenCalledWith({
         where: { isPrivate: false },
         orderBy: { updatedAt: 'desc' },
+        take: DEFAULT_PAGE_LIMIT,
         ...DefaultIncludeAuthorClause,
       });
     });

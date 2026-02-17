@@ -1,23 +1,33 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { authMiddleware } from '@/middleware/auth';
 import { AuthRequest } from '@/types';
-import { ArticleService, getAllPublicArticles } from '@/services/article.service';
+import { ArticleService, getPublicArticles } from '@/services/article.service';
 import {
   CreateArticleRequest,
   UpdateArticleRequest,
 } from '@/types/articles/articles.requests.model';
 import { ArticleData, CreateUpdateArticleData, ArticleId } from '@/types/data/UserArticle.model';
 import { UpdateArticleParams } from '@/types/requests/article.request';
+import { ArticlesResponse } from '@/types/requests/articles.response.model';
 import { ErrorResponseBody } from '@/types/requests/error.response';
+import { parseOffsetPaginationParams } from '@/routes/utils/paginationUtils';
 
 export const articlesRouter = Router();
+
+interface GetPublicArticlesRequest extends Request {
+  query: {
+    limit?: string;
+    skip?: string;
+  };
+}
 
 // Public endpoint - no auth required
 articlesRouter.get(
   '/public',
-  async (_req, res: Response<{ articles: ArticleData[] } | ErrorResponseBody>) => {
+  async (req: GetPublicArticlesRequest, res: Response<ArticlesResponse | ErrorResponseBody>) => {
     try {
-      const articles = await getAllPublicArticles();
+      const options = parseOffsetPaginationParams(req.query);
+      const articles = await getPublicArticles(options);
       res.json({ articles });
     } catch (error) {
       console.error('Error fetching public articles:', error);

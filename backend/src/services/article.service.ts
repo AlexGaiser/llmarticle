@@ -1,14 +1,74 @@
 import { UserArticleDAO } from '@/db/UserArticleDAO';
 import { UserArticle } from '@/generated/prisma/client';
-import { DefaultIncludeAuthorClause } from '@/services/__test__/queries.constants';
+import {
+  DEFAULT_PAGE_LIMIT,
+  DefaultIncludeAuthorClause,
+} from '@/services/constants/queries.constants';
+import {
+  CursorPaginationOptions,
+  OffsetPaginationOptions,
+  PaginationOptions,
+} from '@/types/data/Pagination.model';
 import { prismaArticleToArticleData } from '@/types/data/prisma-db/datamappers';
 import { UserId } from '@/types/data/User.model';
 import { ArticleData, ArticleId, CreateUpdateArticleData } from '@/types/data/UserArticle.model';
 
-export const getAllPublicArticles = async (): Promise<ArticleData[]> => {
+// TODO add a general query function that always maps result to ArticleData
+
+export const getPublicArticles = async (
+  options: OffsetPaginationOptions = { limit: DEFAULT_PAGE_LIMIT, skip: 0 },
+): Promise<ArticleData[]> => {
+  const { limit = DEFAULT_PAGE_LIMIT, skip = 0 } = options;
+
   const articles = await UserArticleDAO.findMany({
-    where: { isPrivate: false },
+    where: {
+      isPrivate: false,
+    },
     orderBy: { updatedAt: 'desc' },
+    take: limit,
+    skip,
+    ...DefaultIncludeAuthorClause,
+  });
+  return articles.map(prismaArticleToArticleData);
+};
+
+export const getCursorPaginatedArticles = async (
+  options: CursorPaginationOptions,
+): Promise<ArticleData[]> => {
+  const { limit = DEFAULT_PAGE_LIMIT, cursor } = options;
+
+  const articles = await UserArticleDAO.findMany({
+    where: {
+      isPrivate: false,
+      ...(cursor
+        ? {
+            OR: [
+              { updatedAt: { lt: cursor.updatedAt } },
+              { updatedAt: cursor.updatedAt, id: { lt: cursor.id } },
+            ],
+          }
+        : {}),
+    },
+    orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+    take: limit,
+    ...DefaultIncludeAuthorClause,
+  });
+  return articles.map(prismaArticleToArticleData);
+};
+
+export const getOffestPaginatedArticles = async (
+  options: OffsetPaginationOptions,
+): Promise<ArticleData[]> => {
+  const limit = options?.limit ?? DEFAULT_PAGE_LIMIT;
+
+  const skip: number | undefined = options.skip;
+  const articles = await UserArticleDAO.findMany({
+    where: {
+      isPrivate: false,
+    },
+    orderBy: { updatedAt: 'desc' },
+    take: limit,
+    skip,
     ...DefaultIncludeAuthorClause,
   });
   return articles.map(prismaArticleToArticleData);

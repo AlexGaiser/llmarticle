@@ -1,8 +1,8 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { authMiddleware } from '@/middleware/auth';
 import {
   createUserReview,
-  getAllPublicReviews,
+  getPublicReviews,
   getPublicReviewsByAuthor,
   getReviewsByAuthorId,
   updateReview,
@@ -14,14 +14,24 @@ import { UserId } from '@/types/data/User.model';
 import { ReviewId, ReviewData, CreateUpdateReviewData } from '@/types/data/UserReview.model';
 import { UpdateReviewParams } from '@/types/requests/review.request';
 import { ErrorResponseBody } from '@/types/requests/error.response';
+import { ReviewsResponse } from '@/types/requests/reviews.response.model';
+import { parseOffsetPaginationParams } from '@/routes/utils/paginationUtils';
 
 export const reviewsRouter = Router();
 
+interface GetPublicReviewsRequest extends Request {
+  query: {
+    limit?: string;
+    skip?: string;
+  };
+}
+
 reviewsRouter.get(
   '/public',
-  async (_req, res: Response<{ reviews: ReviewData[] } | ErrorResponseBody>) => {
+  async (req: GetPublicReviewsRequest, res: Response<ReviewsResponse | ErrorResponseBody>) => {
     try {
-      const reviews = await getAllPublicReviews();
+      const options = parseOffsetPaginationParams(req.query);
+      const reviews = await getPublicReviews(options);
       res.json({ reviews });
     } catch (error) {
       console.error('Error fetching public reviews:', error);
