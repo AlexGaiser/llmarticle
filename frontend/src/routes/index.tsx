@@ -6,6 +6,8 @@ import { ReviewsPage } from "@/pages/ReviewsPage";
 import { ArticlesPage } from "@/pages/ArticlesPage";
 import { ReviewDetailPage } from "@/pages/ReviewDetailPage";
 import { MyContentPage } from "@/pages/MyContentPage";
+import { FeedPage } from "@/pages/FeedPage";
+import { ArticleDetailPage } from "@/pages/ArticleDetailPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MainLayout } from "@/components/MainLayout";
 
@@ -58,6 +60,26 @@ export const AppRoutes = () => {
           <ProtectedRoute>
             <MainLayout>
               <ArticlesPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/articles/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ArticleDetailPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/feed"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <FeedPage />
             </MainLayout>
           </ProtectedRoute>
         }

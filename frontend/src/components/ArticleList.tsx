@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { ArticleApi } from "@/api/articles";
-import { getDateString } from "@/utils/date";
 import { UI_MESSAGES } from "@/constants/messages";
-import { useAuth } from "@/context/AuthContext";
 import { ArticleForm } from "@/components/ArticleForm";
+import { ArticleCard } from "@/components/ArticleCard";
 import type { ArticleData, ArticleId } from "@/api/types/UserArticle.model";
 
 export const ArticleList = ({ keyProp }: { keyProp: number }) => {
-  const { user } = useAuth();
   const [articles, setArticles] = useState<ArticleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +59,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
     return <div className="text-center py-4 text-red-600">{error}</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         Recent Articles
       </h2>
@@ -71,10 +69,7 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
         </p>
       ) : (
         articles.map((article) => (
-          <div
-            key={article.id}
-            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
-          >
+          <div key={article.id}>
             {editingId === article.id ? (
               <ArticleForm
                 initialData={article}
@@ -82,43 +77,11 @@ export const ArticleList = ({ keyProp }: { keyProp: number }) => {
                 onCancel={() => setEditingId(null)}
               />
             ) : (
-              <>
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center space-x-3">
-                    <h3 className="text-xl font-bold text-gray-900">
-                      {article.title}
-                    </h3>
-                    {article.isPrivate && (
-                      <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full text-xs font-medium border border-amber-100">
-                        Private
-                      </span>
-                    )}
-                  </div>
-                  {user && user.id === article.author.id && (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => startEditing(article)}
-                        className="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors duration-200"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(article.id)}
-                        className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors duration-200"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <p className="text-gray-600 whitespace-pre-wrap">
-                  {article.content}
-                </p>
-                <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
-                  <span>By {article.author.username}</span>
-                  <span>Published on {getDateString(article.createdAt)}</span>
-                </div>
-              </>
+              <ArticleCard
+                article={article}
+                onEdit={startEditing}
+                onDelete={handleDelete}
+              />
             )}
           </div>
         ))

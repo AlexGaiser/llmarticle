@@ -124,3 +124,21 @@ articlesRouter.delete('/:id', authMiddleware, async (req: AuthRequest, res: Resp
     }
   }
 });
+
+articlesRouter.get(
+  '/:id',
+  async (req: AuthRequest, res: Response<ArticleData | ErrorResponseBody>) => {
+    try {
+      const id = req.params.id;
+      const article = await ArticleService.findById(ArticleId(id));
+      if (!article) {
+        res.status(404).json({ error: 'Article not found' });
+        return;
+      }
+      res.json(article);
+    } catch (error) {
+      console.error('Error fetching article:', error);
+      res.status(500).json({ error: 'Failed to fetch article' });
+    }
+  },
+);

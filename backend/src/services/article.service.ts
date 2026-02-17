@@ -131,4 +131,12 @@ export const ArticleService = {
       where: { id },
     });
   },
+
+  findById: async (id: ArticleId): Promise<ArticleData | null> => {
+    const res = await UserArticleDAO.findFirst({
+      where: { id },
+      ...DefaultIncludeAuthorClause,
+    });
+    return res ? prismaArticleToArticleData(res) : null;
+  },
 };

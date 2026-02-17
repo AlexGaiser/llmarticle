@@ -4,10 +4,11 @@ import { CursorPaginationOptions } from '@/types/data/Pagination.model';
 import { computeNextCursor, parseCursorPaginationParams } from '@/routes/utils/paginationUtils';
 import { PaginatedFeedResponse } from '@/types/requests/feed.response.model';
 import { ErrorResponseBody } from '@/types/requests/error.response';
+import { AuthRequest } from '@/types';
 
 export const feedRouter = Router();
 
-interface GetFeedRequest extends Request {
+interface GetFeedRequest extends AuthRequest {
   query: {
     cursor?: string;
     limit?: string;

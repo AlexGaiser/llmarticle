@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import type { ReviewData } from "@/api/types/UserReview.model";
+
 import { getDateString } from "@/utils/date";
 
 interface ReviewCardProps {
