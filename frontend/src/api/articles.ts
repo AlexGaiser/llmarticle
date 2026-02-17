@@ -34,4 +34,9 @@ export const ArticleApi = {
   delete: async (id: ArticleId): Promise<void> => {
     await apiClient.delete(`/articles/${id}`);
   },
+
+  getById: async (id: ArticleId): Promise<ArticleData> => {
+    const { data } = await apiClient.get<ArticleData>(`/articles/${id}`);
+    return data;
+  },
 };

@@ -51,7 +51,7 @@ export const ReviewList = () => {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
+    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
       {reviews.map((review) => (
         <ReviewCard key={review.id} review={review} />
       ))}
